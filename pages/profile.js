@@ -1,44 +1,35 @@
-import React from 'react';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
-// Header component
-const Header = () => {
-  return (
-    <header>
-      <div className="logo">PunyaBapak</div>
-      <h1>Pencarian</h1>
-    </header>
-  );
-};
+const Profile = () => {
+  const [user, setUser] = useState(null);
 
-// Product component
-const Product = () => {
-  return (
-    <div className="product">
-      <p>Barang</p>
-    </div>
-  );
-};
+  useEffect(() => {
+    const token = new URLSearchParams(window.location.search).get('token');
 
-// Main component
-const Main = () => {
-  return (
-    <main>
-      <div className="products-grid">
-        {Array.from({ length: 10 }).map((_, index) => (
-          <Product key={index} />
-        ))}
-      </div>
-    </main>
-  );
-};
+    if (token) {
+      axios
+        .get('/api/user', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((response) => {
+          setUser(response.data.user);
+        })
+        .catch((error) => {
+          console.error('Error fetching user data:', error);
+        });
+    }
+  }, []);
 
-// App component
-const App = () => {
+  if (!user) return <div>Loading...</div>;
+
   return (
-    <div className="app">
-      <Header />
-      <Main />
-      <div className="pp">Selamat Pagi, Kaji Betul</div>
+    <div>
+      <h1>Profile</h1>
+      <p>Name: {user.name}</p>
+      <p>Email: {user.email}</p>
     </div>
   );
 };
