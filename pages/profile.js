@@ -1,37 +1,46 @@
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+import React from 'react';
 
-const Profile = () => {
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const token = new URLSearchParams(window.location.search).get('token');
-
-    if (token) {
-      axios
-        .get('/api/user', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then((response) => {
-          setUser(response.data.user);
-        })
-        .catch((error) => {
-          console.error('Error fetching user data:', error);
-        });
-    }
-  }, []);
-
-  if (!user) return <div>Loading...</div>;
-
+// Header component
+const Header = () => {
   return (
-    <div>
-      <h1>Profile</h1>
-      <p>Name: {user.name}</p>
-      <p>Email: {user.email}</p>
+    <header>
+      <div className="logo">PunyaBapak</div>
+      <h1>Pencarian</h1>
+    </header>
+  );
+};
+
+// Product component
+const Product = () => {
+  return (
+    <div className="product">
+      <p>Barang</p>
     </div>
   );
 };
 
-export default Profile;
+// Main component
+const Main = () => {
+  return (
+    <main>
+      <div className="products-grid">
+        {Array.from({ length: 10 }).map((_, index) => (
+          <Product key={index} />
+        ))}
+      </div>
+    </main>
+  );
+};
+
+// App component
+const App = () => {
+  return (
+    <div className="app">
+      <Header />
+      <Main />
+      <div className="pp">Selamat Pagi, Kaji Betul</div>
+    </div>
+  );
+};
+
+export default App;
