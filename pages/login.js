@@ -1,6 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 const LoginPage = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = (e) => {
+    e.preventDefault();  // Prevent the form from refreshing the page
+
+    // Here you would typically handle the login logic, such as API calls
+    console.log('Logging in with:', email, password);
+
+    // Redirect to the API route for login
+    window.location.href = '/api/auth'; // or handle with fetch/axios
+  };
+  
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
@@ -52,6 +65,7 @@ const LoginPage = () => {
           </div>
           
           <button
+          onClick={handleLogin}
             type="button"
             className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition-colors mt-4"
           >
