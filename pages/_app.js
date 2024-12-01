@@ -1,12 +1,5 @@
-import GoogleLoginButton from '../components/GoogleLoginButton';
-
 function MyApp({ Component, pageProps }) {
-  return (
-    <div>
-      <GoogleLoginButton />
-      <Component {...pageProps} />
-    </div>
-  );
+  return <Component {...pageProps} />;
 }
 
 export default MyApp;
