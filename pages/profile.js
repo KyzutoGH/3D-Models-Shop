@@ -1,35 +1,20 @@
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useSession } from "next-auth/react";
 
 const Profile = () => {
-  const [user, setUser] = useState(null);
+  const { data: session, status } = useSession();
 
-  useEffect(() => {
-    const token = new URLSearchParams(window.location.search).get('token');
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  }
 
-    if (token) {
-      axios
-        .get('/api/user', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then((response) => {
-          setUser(response.data.user);
-        })
-        .catch((error) => {
-          console.error('Error fetching user data:', error);
-        });
-    }
-  }, []);
-
-  if (!user) return <div>Loading...</div>;
+  if (!session) {
+    return <div>You are not logged in. Please log in.</div>;
+  }
 
   return (
     <div>
-      <h1>Profile</h1>
-      <p>Name: {user.name}</p>
-      <p>Email: {user.email}</p>
+      <h1>Welcome, {session.user.name}</h1>
+      {/* Render other user info */}
     </div>
   );
 };

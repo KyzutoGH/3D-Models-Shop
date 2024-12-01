@@ -1,33 +1,25 @@
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+// pages/index.js
+import { useSession } from "next-auth/react";
 
-const Home = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const router = useRouter();
+const HomePage = () => {
+  const { data: session } = useSession();
 
-  useEffect(() => {
-    const token = localStorage.getItem('jwtToken');
-    if (token) {
-      setIsLoggedIn(true);
-    }
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem('jwtToken');
-    setIsLoggedIn(false);
-    router.push('/');
-  };
+  if (!session) {
+    return (
+      <div>
+        <h1>You are not logged in</h1>
+        <a href="/login">Login</a>
+      </div>
+    );
+  }
 
   return (
     <div>
-      <h1>Welcome to Our Application</h1>
-      {isLoggedIn ? (
-        <button onClick={handleLogout}>Logout</button>
-      ) : (
-        <a href="/api/auth">Login with Google</a>
-      )}
+      <h1>Welcome, {session.user.name}!</h1>
+      <img src={session.user.image} alt="User Image" />
+      <p>Email: {session.user.email}</p>
     </div>
   );
 };
 
-export default Home;
+export default HomePage;
