@@ -1,37 +1,186 @@
-import { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 
 const Profile = () => {
-  const [user, setUser] = useState(null);
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    fullName: '',
+    phoneNumber: '',
+    alamat: '',
+    registrationDate: '',
+    transactionStatus: '',
+    totalNominalTransaction: '',
+    totalTransaction: '',
+  });
 
-  useEffect(() => {
-    const token = new URLSearchParams(window.location.search).get('token');
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-    if (token) {
-      axios
-        .get('/api/user', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then((response) => {
-          setUser(response.data.user);
-        })
-        .catch((error) => {
-          console.error('Error fetching user data:', error);
-        });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      await axios.post('/api/register', formData);
+      // Handle successful registration
+    } catch (error) {
+      console.error('Error registering user:', error);
+      // Handle registration error
     }
-  }, []);
-
-  if (!user) return <div>Loading...</div>;
+  };
 
   return (
-    <div>
-      <h1>Profile</h1>
-      <p>Name: {user.name}</p>
-      <p>Email: {user.email}</p>
+    <div className="flex justify-center items-center h-screen">
+      <div className="bg-blue-500 text-white p-8 rounded-lg w-full max-w-4xl">
+        <div className="flex items-center mb-4">
+          <div className="w-16 h-16 bg-white rounded-full flex justify-center items-center mr-4">
+            <span className="text-blue-500 font-bold">PP</span>
+          </div>
+          <h1 className="text-2xl font-bold">Pencarian</h1>
+          <div className="ml-auto text-right">
+            <p className="font-medium">Selamat Pagi,</p>
+            <p className="font-medium">Kaji Beky</p>
+          </div>
+        </div>
+        <form onSubmit={handleSubmit}>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="username" className="block font-medium mb-2">
+                Username
+              </label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                className="w-full px-4 py-2 rounded-md"
+              />
+            </div>
+            <div>
+              <label htmlFor="phoneNumber" className="block font-medium mb-2">
+                Nomor Telepon
+              </label>
+              <input
+                type="text"
+                id="phoneNumber"
+                name="phoneNumber"
+                value={formData.phoneNumber}
+                onChange={handleChange}
+                className="w-full px-4 py-2 rounded-md"
+              />
+            </div>
+            <div>
+              <label htmlFor="email" className="block font-medium mb-2">
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full px-4 py-2 rounded-md"
+              />
+            </div>
+            <div>
+              <label htmlFor="alamat" className="block font-medium mb-2">
+                Alamat
+              </label>
+              <input
+                type="text"
+                id="alamat"
+                name="alamat"
+                value={formData.alamat}
+                onChange={handleChange}
+                className="w-full px-4 py-2 rounded-md"
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4 mt-4">
+            <div>
+              <label htmlFor="fullName" className="block font-medium mb-2">
+                Nama Lengkap
+              </label>
+              <input
+                type="text"
+                id="fullName"
+                name="fullName"
+                value={formData.fullName}
+                onChange={handleChange}
+                className="w-full px-4 py-2 rounded-md"
+              />
+            </div>
+            <div>
+              <label htmlFor="registrationDate" className="block font-medium mb-2">
+                Tanggal Daftar
+              </label>
+              <input
+                type="text"
+                id="registrationDate"
+                name="registrationDate"
+                value={formData.registrationDate}
+                onChange={handleChange}
+                className="w-full px-4 py-2 rounded-md"
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4 mt-4">
+            <div>
+              <label htmlFor="transactionStatus" className="block font-medium mb-2">
+                Jumlah Transaksi
+              </label>
+              <input
+                type="text"
+                id="transactionStatus"
+                name="transactionStatus"
+                value={formData.transactionStatus}
+                onChange={handleChange}
+                className="w-full px-4 py-2 rounded-md"
+              />
+            </div>
+            <div>
+              <label htmlFor="totalNominalTransaction" className="block font-medium mb-2">
+                Total Nominal Transaksi
+              </label>
+              <input
+                type="text"
+                id="totalNominalTransaction"
+                name="totalNominalTransaction"
+                value={formData.totalNominalTransaction}
+                onChange={handleChange}
+                className="w-full px-4 py-2 rounded-md"
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4 mt-4">
+            <div>
+              <label htmlFor="totalTransaction" className="block font-medium mb-2">
+                Transaksi Terbesar
+              </label>
+              <input
+                type="text"
+                id="totalTransaction"
+                name="totalTransaction"
+                value={formData.totalTransaction}
+                onChange={handleChange}
+                className="w-full px-4 py-2 rounded-md"
+              />
+            </div>
+          </div>
+          <div className="mt-4 text-right">
+            <button
+              type="submit"
+              className="bg-white text-blue-500 px-4 py-2 rounded-md font-medium hover:bg-gray-200"
+            >
+              Submit
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
 
-export default App;
+export default Profile;
