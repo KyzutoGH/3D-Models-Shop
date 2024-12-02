@@ -93,19 +93,19 @@ const Profile = ({ session }) => {
 
   return (
     <div className="flex justify-center items-center h-screen">
-      <div className="bg-blue-500 text-white p-6 w-full max-w-4xl">
+      <div className="bg-blue-500 text-white p-6 w-full max-w-3xl">
         <div className="flex justify-between mb-3">
           <div className="w-16 h-16 bg-white rounded-full flex justify-center items-center">
             <span className="text-blue-500 font-bold">PP</span>
           </div>
           <h1 className="grid justify-items-center text-2xl font-bold">Pencarian</h1>
           <div className="justify-center flex items-center">
-            <p className="font-medium">{greeting}, {user.id}</p>
+            <p className="font-medium">{greeting}, {user.name}</p>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div className="flex justify-center flex-col items-center gap-5 pt-8">
+          <div className="flex flex-col items-center gap-5 pt-8">
             <div className="box-border h-32 w-32 p-4 border-2 bg-green-400">
               Foto Anda Disini
             </div>
