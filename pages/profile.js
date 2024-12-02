@@ -22,6 +22,7 @@ export async function getServerSideProps(context) {
 
 const Profile = ({ session }) => {
   const user = session?.user || {};
+  const [greeting, setGreeting] = useState('');
 
   const [formData, setFormData] = useState({
     username: user.name || '',
@@ -36,6 +37,23 @@ const Profile = ({ session }) => {
   });
 
   useEffect(() => {
+    // Determine the greeting based on the time of day
+    const currentHour = new Date().getHours();
+    let greetingMessage = '';
+
+    if (currentHour >= 5 && currentHour < 10) {
+      greetingMessage = 'Selamat Pagi'; // Morning (5 AM - 10 AM)
+    } else if (currentHour >= 10 && currentHour < 15) {
+      greetingMessage = 'Selamat Siang'; // Afternoon (10 AM - 3 PM)
+    } else if (currentHour >= 15 && currentHour < 18) {
+      greetingMessage = 'Selamat Sore'; // Evening (3 PM - 6 PM)
+    } else {
+      greetingMessage = 'Selamat Malam'; // Night (6 PM - 5 AM)
+    }
+
+    setGreeting(greetingMessage);
+
+    // Fetch user data if email is available
     const fetchData = async () => {
       if (user.email) {
         try {
@@ -110,7 +128,7 @@ const Profile = ({ session }) => {
           </div>
           <h1 className="grid justify-items-center text-2xl font-bold">Pencarian</h1>
           <div className="justify-center flex items-center">
-            <p className="font-medium">Selamat Pagi, {user.name}</p>
+            <p className="font-medium">{greeting}, {user.name}</p>
           </div>
         </div>
 
@@ -241,7 +259,7 @@ const Profile = ({ session }) => {
               </div>
               <div>
                 <label htmlFor="totalTransaction" className="block font-medium mb-2">
-                  Transaksi Terbesar
+                  Total Transaksi
                 </label>
                 <input
                   type="text"
@@ -254,12 +272,12 @@ const Profile = ({ session }) => {
               </div>
             </div>
 
-            <div className="flex justify-end mt-5">
+            <div className="flex justify-center items-center">
               <button
                 type="submit"
-                className="bg-white text-blue-500 px-4 py-2 rounded-md font-medium hover:bg-gray-200"
+                className="bg-blue-600 text-white px-6 py-2 rounded-md"
               >
-                Submit
+                Simpan Perubahan
               </button>
             </div>
           </form>
