@@ -7,7 +7,7 @@ export async function getServerSideProps(context) {
   if (!session) {
     return {
       redirect: {
-        destination: '/login', // Redirect to login page if no session
+        destination: '/login',
         permanent: false,
       },
     };
@@ -15,7 +15,7 @@ export async function getServerSideProps(context) {
 
   return {
     props: {
-      session, // Pass session as a prop
+      session,
     },
   };
 }
@@ -28,8 +28,8 @@ const Profile = ({ session }) => {
     username: user.name || '',
     phoneNumber: user.hp || '',
     email: user.email || '',
-    alamat: 'Tolong segera isi jika belum ada',
-    fullName: 'Tolong segera isi jika belum ada',
+    alamat: user.alamat || '',
+    fullName: user.fullName || '',
     registrationDate: user.tgl_register || '',
     transactionStatus: '0',
     totalNominalTransaction: '0',
@@ -37,43 +37,40 @@ const Profile = ({ session }) => {
   });
 
   useEffect(() => {
-    // Determine the greeting based on the time of day
     const currentHour = new Date().getHours();
     let greetingMessage = '';
-
+  
     if (currentHour >= 5 && currentHour < 10) {
-      greetingMessage = 'Selamat Pagi'; // Morning (5 AM - 10 AM)
+      greetingMessage = 'Selamat Pagi';
     } else if (currentHour >= 10 && currentHour < 15) {
-      greetingMessage = 'Selamat Siang'; // Afternoon (10 AM - 3 PM)
+      greetingMessage = 'Selamat Siang';
     } else if (currentHour >= 15 && currentHour < 18) {
-      greetingMessage = 'Selamat Sore'; // Evening (3 PM - 6 PM)
+      greetingMessage = 'Selamat Sore';
     } else {
-      greetingMessage = 'Selamat Malam'; // Night (6 PM - 5 AM)
+      greetingMessage = 'Selamat Malam';
     }
-
+  
     setGreeting(greetingMessage);
-
-    // Fetch user data if email is available
+  
     const fetchData = async () => {
-      if (user.email) {
+      if (user.id) {
         try {
-          const response = await fetch(`/api/user/${user.email}`);
+          const response = await fetch(`/api/user/${user.id}`, { timeout: 10000 });
           if (!response.ok) {
-            throw new Error('Failed to fetch user data');
+            throw new Error('Gagal mengambil data pengguna');
           }
-
           const data = await response.json();
-          console.log(data); // Log API response for debugging
-
+          console.log('Fetched data:', data);
           if (data) {
             setFormData((prevData) => ({
               ...prevData,
               fullName: data.fullName || prevData.fullName,
               alamat: data.alamat || prevData.alamat,
-              registrationDate: data.registrationDate || prevData.registrationDate,
+              registrationDate: data.registrationDate ? new Date(data.registrationDate).toLocaleDateString('id-ID') : 'Tunggu data',
               transactionStatus: data.transactionStatus || prevData.transactionStatus,
               totalNominalTransaction: data.totalNominalTransaction || prevData.totalNominalTransaction,
               totalTransaction: data.totalTransaction || prevData.totalTransaction,
+              phoneNumber: data.phoneNumber || prevData.phoneNumber, // Ensure phone number is being updated
             }));
           }
         } catch (error) {
@@ -81,9 +78,9 @@ const Profile = ({ session }) => {
         }
       }
     };
-
+  
     fetchData();
-  }, [user.email]);
+  }, [user.id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -93,31 +90,6 @@ const Profile = ({ session }) => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    // Handle form submission (e.g., save the updated data to the server)
-    console.log(formData);
-
-    // Example of an API request to submit the form (you can implement your own API endpoint)
-    try {
-      const response = await fetch('/api/update-user', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        alert('Profile updated successfully');
-      } else {
-        alert('Failed to update profile');
-      }
-    } catch (error) {
-      console.error('Error submitting form:', error);
-      alert('Error submitting form');
-    }
-  };
 
   return (
     <div className="flex justify-center items-center h-screen">
@@ -128,7 +100,7 @@ const Profile = ({ session }) => {
           </div>
           <h1 className="grid justify-items-center text-2xl font-bold">Pencarian</h1>
           <div className="justify-center flex items-center">
-            <p className="font-medium">{greeting}, {user.name}</p>
+            <p className="font-medium">{greeting}, {user.id}</p>
           </div>
         </div>
 
@@ -145,7 +117,7 @@ const Profile = ({ session }) => {
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <form className="flex flex-col gap-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="username" className="block font-medium mb-2">
@@ -158,6 +130,7 @@ const Profile = ({ session }) => {
                   value={formData.username}
                   onChange={handleChange}
                   className="w-full px-4 py-2 rounded-md"
+                  disabled
                 />
               </div>
               <div>
@@ -171,6 +144,7 @@ const Profile = ({ session }) => {
                   value={formData.phoneNumber}
                   onChange={handleChange}
                   className="w-full px-4 py-2 rounded-md"
+                  disabled
                 />
               </div>
 
@@ -199,6 +173,7 @@ const Profile = ({ session }) => {
                   value={formData.alamat}
                   onChange={handleChange}
                   className="w-full px-4 py-2 rounded-md"
+                  disabled
                 />
               </div>
               <div>
@@ -212,6 +187,7 @@ const Profile = ({ session }) => {
                   value={formData.fullName}
                   onChange={handleChange}
                   className="w-full px-4 py-2 rounded-md"
+                  disabled
                 />
               </div>
               <div>
@@ -242,6 +218,7 @@ const Profile = ({ session }) => {
                   value={formData.transactionStatus}
                   onChange={handleChange}
                   className="w-full px-4 py-2 rounded-md"
+                  disabled
                 />
               </div>
               <div>
@@ -255,6 +232,7 @@ const Profile = ({ session }) => {
                   value={formData.totalNominalTransaction}
                   onChange={handleChange}
                   className="w-full px-4 py-2 rounded-md"
+                  disabled
                 />
               </div>
               <div>
@@ -268,6 +246,7 @@ const Profile = ({ session }) => {
                   value={formData.totalTransaction}
                   onChange={handleChange}
                   className="w-full px-4 py-2 rounded-md"
+                  disabled
                 />
               </div>
             </div>
