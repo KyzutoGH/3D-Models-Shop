@@ -29,22 +29,32 @@ const Profile = () => {
       // Handle registration error
     }
   };
-
   return (
     <div className="flex justify-center items-center h-screen">
-      <div className="bg-blue-500 text-white p-8 rounded-lg w-full max-w-4xl">
-        <div className="flex items-center mb-4">
-          <div className="w-16 h-16 bg-white rounded-full flex justify-center items-center mr-4">
+      <div className="bg-blue-500 text-white p-6  w-full max-w-4xl">
+        <div class="flex justify-between mb-3">
+          <div className="w-16 h-16 bg-white rounded-full flex justify-center items-center">
             <span className="text-blue-500 font-bold">PP</span>
           </div>
-          <h1 className="text-2xl font-bold">Pencarian</h1>
-          <div className="ml-auto text-right">
-            <p className="font-medium">Selamat Pagi,</p>
-            <p className="font-medium">Kaji Beky</p>
+          <h1 className="grid justify-items-center flex items-center text-2xl font-bold">Pencarian</h1>
+          <div className="justify-center flex items-center">
+            <p className="font-medium">Selamat Pagi</p>
           </div>
         </div>
-        <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-2 gap-4">
+        <div class="grid grid-rows-1 grid-flow-col gap-2">
+        <div class="row-span-2 grid-cols-1 flex justify-start flex-col items-center gap-5 pt-8">
+        <div class="box-border h-32 w-32 p-4 border-2 bg-green-400">
+          foto anda disini
+        </div>
+        <div class="box-border h-10 w-32 p-4 border-2 bg-red-500">
+          ganti foto
+        </div>
+        <div class="box-border h-10 w-32 p-4 border-2 bg-amber-400">
+          status akun
+        </div>
+        </div>
+        <form onSubmit={handleSubmit}> 
+        <div className="grid grid-cols-2 gap-4">
             <div>
               <label htmlFor="username" className="block font-medium mb-2">
                 Username
@@ -71,6 +81,7 @@ const Profile = () => {
                 className="w-full px-4 py-2 rounded-md"
               />
             </div>
+
             <div>
               <label htmlFor="email" className="block font-medium mb-2">
                 Email
@@ -97,8 +108,6 @@ const Profile = () => {
                 className="w-full px-4 py-2 rounded-md"
               />
             </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4 mt-4">
             <div>
               <label htmlFor="fullName" className="block font-medium mb-2">
                 Nama Lengkap
@@ -126,8 +135,8 @@ const Profile = () => {
               />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4 mt-4">
-            <div>
+        <div class="grid-cols-3">
+        <div>
               <label htmlFor="transactionStatus" className="block font-medium mb-2">
                 Jumlah Transaksi
               </label>
@@ -153,8 +162,6 @@ const Profile = () => {
                 className="w-full px-4 py-2 rounded-md"
               />
             </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4 mt-4">
             <div>
               <label htmlFor="totalTransaction" className="block font-medium mb-2">
                 Transaksi Terbesar
@@ -168,16 +175,16 @@ const Profile = () => {
                 className="w-full px-4 py-2 rounded-md"
               />
             </div>
-          </div>
-          <div className="mt-4 text-right">
+            <div class="grid justify-items-end mt-5">
             <button
               type="submit"
-              className="bg-white text-blue-500 px-4 py-2 rounded-md font-medium hover:bg-gray-200"
-            >
+              className="bg-white text-blue-500 px-4 py-2 rounded-md font-medium hover:bg-gray-200">
               Submit
             </button>
-          </div>
+            </div>
+        </div>
         </form>
+        </div>
       </div>
     </div>
   );

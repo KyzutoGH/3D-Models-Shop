@@ -2,6 +2,8 @@ import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import jwt from 'jsonwebtoken';
 import db from '../../lib/db';
+import {runMiddleware} from '../../lib/middleware';
+
 
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
@@ -21,19 +23,19 @@ passport.use(new GoogleStrategy({
   });
 }));
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method === 'GET') {
-    passport.authenticate('google', {
-      scope: ['email', 'profile']
-    })(req, res);
+    // Start Google Authentication
+    await runMiddleware(req, res, passport.authenticate('google', { scope: ['email', 'profile'] }));
   } else if (req.method === 'POST') {
-    passport.authenticate('google', (err, user) => {
-      if (err) return res.status(500).json({ error: 'Authentication failed' });
+    // Handle Google Callback
+    await runMiddleware(req, res, passport.authenticate('google', { session: false }));
 
-      // Generate JWT token
-      const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-      return res.status(200).json({ token });
-    })(req, res);
+    // Generate JWT token
+    const user = req.user; // User is set by Passport
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    res.status(200).json({ token });
+  } else {
+    res.status(405).json({ error: 'Method Not Allowed' });
   }
 }
-  

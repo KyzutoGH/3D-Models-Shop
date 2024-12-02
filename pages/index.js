@@ -8,7 +8,7 @@ const HomePage = () => {
     return (
       <div>
         <h1>You are not logged in</h1>
-        <a href="/login">Login</a>
+        <Link href="/login">Login</Link>
       </div>
     );
   }
@@ -16,7 +16,7 @@ const HomePage = () => {
   return (
     <div>
       <h1>Welcome, {session.user.name}!</h1>
-      <img src={session.user.image} alt="User Image" />
+      <Image src={session.user.image} alt="User Image" />
       <p>Email: {session.user.email}</p>
     </div>
   );
