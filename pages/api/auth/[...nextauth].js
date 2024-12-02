@@ -1,5 +1,6 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import db from '../../../lib/db';
 
 export default NextAuth({
   providers: [
@@ -9,32 +10,58 @@ export default NextAuth({
     }),
   ],
   callbacks: {
-    async session({ session, token }) {
-      // Ensure the user ID is available in the session
-      if (token) {
-        session.user.id = token.id;
+    async signIn({ user, account, profile }) {
+      if (account.provider === "google") {
+        try {
+          const conn = await db.getConnection();
+          
+          // Check if user exists
+          const [existingUser] = await conn.query(
+            'SELECT * FROM users WHERE email = ?',
+            [user.email]
+          );
+
+          if (existingUser.length === 0) {
+            // Create new user if doesn't exist
+            const formattedDate = new Date().toISOString().slice(0, 19).replace('T', ' ');
+            await conn.query(
+              'INSERT INTO users (email, name, role, tgl_register) VALUES (?, ?, ?, ?)',
+              [user.email, user.name, 'member', formattedDate]
+            );
+          }
+
+          conn.release();
+          return true;
+        } catch (error) {
+          console.error('Database error:', error);
+          return false;
+        }
       }
-      return session;
+      return true;
     },
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id; // Save the user's ID in the token
+    async session({ session, user }) {
+      try {
+        const conn = await db.getConnection();
+        const [dbUser] = await conn.query(
+          'SELECT * FROM users WHERE email = ?',
+          [session.user.email]
+        );
+        
+        if (dbUser.length > 0) {
+          session.user.role = dbUser[0].role;
+          session.user.id = dbUser[0].id;
+        }
+        
+        conn.release();
+        return session;
+      } catch (error) {
+        console.error('Session database error:', error);
+        return session;
       }
-      return token;
-    },
-  },
-  session: {
-    strategy: "jwt", // Ensure JWT is used for session management
+    }
   },
   pages: {
-    // Redirect to profile after successful login
-    signIn: '/login', // Optional: Define the custom login page
-    error: '/login',  // Optional: Define a custom error page
-  },
-  callbacks: {
-    async redirect({ url, baseUrl }) {
-      // Redirect to /profile after successful login
-      return baseUrl + '/profile';
-    },
+    signIn: '/auth/signin',
+    error: '/auth/error',
   },
 });

@@ -1,39 +1,59 @@
-import passport from 'passport';
+import passport from "passport";
+import db from '../../../lib/db';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import jwt from 'jsonwebtoken';
-import db from '../../lib/db';
 
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: "http://localhost:3000/api/auth/callback"
-}, (token, tokenSecret, profile, done) => {
-  db.query('SELECT * FROM users WHERE email = ?', [profile.emails[0].value], (err, result) => {
-    if (err) return done(err);
-    if (result.length > 0) {
-      return done(null, result[0]);
-    } else {
-      db.query('INSERT INTO users (email, name, role) VALUES (?, ?, ?)', [profile.emails[0].value, profile.displayName, 'user'], (err, result) => {
-        if (err) return done(err);
-        return done(null, { id: result.insertId, email: profile.emails[0].value, name: profile.displayName });
-      });
-    }
-  });
+  callbackURL: "http://localhost:3000/api/auth/callback",
+}, async (accessToken, refreshToken, profile, done) => {
+  try {
+    const userEmail = profile.emails[0].value;
+
+    // Cek jika user sudah ada di database
+    db.query('SELECT * FROM users WHERE email = ?', [userEmail], (err, result) => {
+      if (err) {
+        console.error('Database error:', err);
+        return done(err);
+      }
+
+      // Jika user sudah ada, return data user
+      if (result.length > 0) {
+        return done(null, result[0]);
+      } else {
+        // Jika user belum ada, buat user baru
+        const formattedDate = new Date().toISOString().slice(0, 19).replace('T', ' ');
+        const sql = 'INSERT INTO users (email, name, role, tgl_register) VALUES (?, ?, ?, ?)';
+        db.query(sql, [userEmail, profile.displayName, 'member', formattedDate], (err, result) => {
+          if (err) {
+            return done(err);
+          }
+
+          // Return data user setelah insert
+          return done(null, {
+            id: result.insertId,
+            email: userEmail,
+            name: profile.displayName,
+            role: 'member'
+          });
+        });
+      }
+    });
+  } catch (err) {
+    return done(err);
+  }
 }));
 
-export default function handler(req, res) {
-  if (req.method === 'GET') {
-    passport.authenticate('google', {
-      scope: ['email', 'profile']
-    })(req, res);
-  } else if (req.method === 'POST') {
-    passport.authenticate('google', (err, user) => {
-      if (err) return res.status(500).json({ error: 'Authentication failed' });
+// Serialisasi dan deserialisasi user
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
 
-      // Generate JWT token
-      const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-      return res.status(200).json({ token });
-    })(req, res);
-  }
-}
-  
+passport.deserializeUser((id, done) => {
+  db.query('SELECT * FROM users WHERE id = ?', [id], (err, result) => {
+    if (err) {
+      return done(err);
+    }
+    done(null, result[0]);
+  });
+});
