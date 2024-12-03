@@ -82,7 +82,7 @@ const LupaPasswordPage = () => {
             <div className="flex justify-center text-sm text-gray-600">
               Kembali ke 
               <Link href="/login" className="ml-1 text-blue-600 hover:underline">
-                Login
+                &nbsp;Login
               </Link>
             </div>
           </div>
