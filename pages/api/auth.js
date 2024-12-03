@@ -57,3 +57,12 @@ passport.deserializeUser((id, done) => {
     done(null, result[0]);
   });
 });
+
+export const handleLogout = async () => {
+  try {
+    await signOut({ callbackUrl: '/login' }); // Redirect ke halaman login setelah logout
+  } catch (error) {
+    console.error('Logout error:', error);
+    throw error;
+  }
+};

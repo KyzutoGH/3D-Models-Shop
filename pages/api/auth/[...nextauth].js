@@ -64,4 +64,9 @@ export default NextAuth({
     signIn: '/auth/signin',
     error: '/auth/error',
   },
+  events: {
+    async signOut({ session, token }) {
+      // Bisa tambahkan logic tambahan saat logout di sini
+    },
+  },
 });
