@@ -10,17 +10,39 @@ const LoginPage = () => {
   const handleLogin = (e) => {
     e.preventDefault();
     console.log("Login with:", email, password);
+
+    // Misalnya, setelah login berhasil, kita tentukan role pengguna
+    // Role ini bisa didapat dari response API atau sistem autentikasi yang digunakan
+    const userRole = email === "admin@example.com" ? "admin" : email === "artist@example.com" ? "artist" : "member";
+
+    // Redirect berdasarkan role
+    if (userRole === "admin") {
+      router.push("/admin/dashboard");
+    } else if (userRole === "artist") {
+      router.push("/artist/profile");
+    } else {
+      router.push("/member/profile");
+    }
   };
 
   const handleGoogleLogin = () => {
     signIn("google");
   };
+
   const { data: session } = useSession();
   const router = useRouter();
 
   useEffect(() => {
     if (session) {
-      router.push("/profile");
+      // Misalnya, role bisa diambil dari session atau API
+      const userRole = session.user.role || "member"; // Default ke member
+      if (userRole === "admin") {
+        router.push("/admin/dashboard");
+      } else if (userRole === "artist") {
+        router.push("/artist/profile");
+      } else {
+        router.push("/member/profile");
+      }
     }
   }, [session, router]);
 

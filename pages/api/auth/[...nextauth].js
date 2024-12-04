@@ -10,6 +10,7 @@ export default NextAuth({
     }),
   ],
   callbacks: {
+    // Handling signIn to ensure the user is added to the database with a role
     async signIn({ user, account, profile }) {
       if (account.provider === "google") {
         try {
@@ -39,6 +40,8 @@ export default NextAuth({
       }
       return true;
     },
+
+    // Adding the role to the session from the database
     async session({ session, user }) {
       try {
         const conn = await db.getConnection();
@@ -48,8 +51,8 @@ export default NextAuth({
         );
         
         if (dbUser.length > 0) {
-          session.user.role = dbUser[0].role;
-          session.user.id = dbUser[0].id;
+          session.user.role = dbUser[0].role; // Adding role to session
+          session.user.id = dbUser[0].id; // Adding user id to session
         }
         
         conn.release();
@@ -61,12 +64,12 @@ export default NextAuth({
     }
   },
   pages: {
-    signIn: '/auth/signin',
-    error: '/auth/error',
+    signIn: '/auth/signin', // Custom sign-in page
+    error: '/auth/error',   // Custom error page for login
   },
   events: {
     async signOut({ session, token }) {
-      // Bisa tambahkan logic tambahan saat logout di sini
+      // You can add additional logic during sign-out if needed
     },
   },
 });
