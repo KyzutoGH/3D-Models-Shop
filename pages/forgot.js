@@ -38,7 +38,7 @@ const LupaPasswordPage = () => {
         <div className="flex items-center justify-center mb-6">
           <div className="bg-white w-12 h-12 flex items-center justify-center text-white rounded">
             <Image
-              src="/PB3DShop.png"
+              src="/Logo3DShopBL.png"
               width={580}
               height={430}
               alt="Picture of the author"
