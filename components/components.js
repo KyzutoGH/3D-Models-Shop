@@ -2,10 +2,10 @@ import Link from "next/link";
 
 const Content = () => {
   return (
-    <div className="py-20 bg-gray-100">
+    <div className="py-20 bg-blue-500">
       <div className="container mx-auto">
-        <h1 className="text-4xl font-bold mb-8">Discover Our Creations</h1>
-        <p className="text-lg mb-12">Exploring a World of 3D Models and Designs</p>
+        <h1 className="text-4xl font-bold mb-8 flex items-center justify-center">Discover Our Creations</h1>
+        <p className="text-lg mb-12 flex items-center justify-center">Exploring a World of 3D Models and Designs</p>
         <div className="grid grid-cols-3 gap-8">
           {/* Add product cards here */}
         </div>
@@ -16,7 +16,7 @@ const Content = () => {
 
 const Navbar = ({ children }) => {
   return (
-    <nav className="bg-purple-700 text-white py-4">
+    <nav className="bg-indigo-700 text-white py-4">
       <div className="container mx-auto flex justify-between items-center">
         <Link href="/">
           <a className="text-xl font-bold">Punya Bapak</a>

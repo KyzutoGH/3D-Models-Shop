@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 const LupaPasswordPage = () => {
   const [email, setEmail] = useState("");
@@ -35,8 +36,13 @@ const LupaPasswordPage = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         <div className="flex items-center justify-center mb-6">
-          <div className="bg-blue-500 w-12 h-12 flex items-center justify-center text-white rounded">
-            LOGO
+          <div className="bg-white w-12 h-12 flex items-center justify-center text-white rounded">
+            <Image
+              src="/PB3DShop.png"
+              width={580}
+              height={430}
+              alt="Picture of the author"
+            />
           </div>
           <h1 className="text-2xl text-gray-600 ml-2 font-semibold">PunyaBapak</h1>
         </div>
