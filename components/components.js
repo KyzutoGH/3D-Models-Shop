@@ -1,8 +1,9 @@
 import Link from "next/link";
+import Image from "next/image";
 
 const Content = () => {
   return (
-    <div className="py-20 bg-blue-500">
+    <div className="py-20 bg-emerald-500">
       <div className="container mx-auto">
         <h1 className="text-4xl font-bold mb-8 flex items-center justify-center">Discover Our Creations</h1>
         <p className="text-lg mb-12 flex items-center justify-center">Exploring a World of 3D Models and Designs</p>
@@ -16,9 +17,15 @@ const Content = () => {
 
 const Navbar = ({ children }) => {
   return (
-    <nav className="bg-indigo-700 text-white py-4">
+    <nav className="bg-emerald-700 text-white py-4">
       <div className="container mx-auto flex justify-between items-center">
         <Link href="/" className="text-xl font-bold">
+        <Image
+              src="/PB3DShop.png"
+              width={50}
+              height={43}
+              alt="Picture of the author"
+            />
           Punya Bapak
         </Link>
         <div>
