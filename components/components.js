@@ -18,21 +18,21 @@ const Navbar = ({ children }) => {
   return (
     <nav className="bg-purple-700 text-white py-4">
       <div className="container mx-auto flex justify-between items-center">
-        <Link href="/">
-          <a className="text-xl font-bold">Punya Bapak</a>
+        <Link href="/" className="text-xl font-bold">
+          Punya Bapak
         </Link>
         <div>
-          <Link href="/home">
-            <a className="mx-4 hover:text-gray-300">Home</a>
+          <Link href="/home" className="mx-4 hover:text-gray-300">
+            Home
           </Link>
-          <Link href="/book-online">
-            <a className="mx-4 hover:text-gray-300">Book Online</a>
+          <Link href="/book-online" className="mx-4 hover:text-gray-300">
+            Book Online
           </Link>
-          <Link href="/shop">
-            <a className="mx-4 hover:text-gray-300">Shop</a>
+          <Link href="/shop" className="mx-4 hover:text-gray-300">
+            Shop
           </Link>
-          <Link href="/cart">
-            <a className="mx-4 hover:text-gray-300">Cart (0)</a>
+          <Link href="/cart" className="mx-4 hover:text-gray-300">
+            Cart (0)
           </Link>
         </div>
       </div>
