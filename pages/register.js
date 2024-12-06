@@ -1,13 +1,16 @@
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { useSession, signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 
 const RegisterPage = () => {
   const [name, setName] = useState("");
+  const [UserName, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [NomorTelepon, setNomorTelepon] = useState("");
 
   const router = useRouter();
   const { data: session } = useSession();
@@ -47,8 +50,13 @@ const RegisterPage = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         <div className="flex items-center justify-center mb-6">
-          <div className="bg-blue-500 w-12 h-12 flex items-center justify-center text-white rounded">
-            LOGO
+          <div className="bg-white w-12 h-12 flex items-center justify-center text-white rounded">
+            <Image
+              src="/Logo3DShopBL.png"
+              width={580}
+              height={430}
+              alt="Picture of the author"
+            />
           </div>
           <h1 className="text-2xl text-gray-600 ml-2 font-semibold">PunyaBapak</h1>
         </div>
@@ -67,6 +75,21 @@ const RegisterPage = () => {
               onChange={(e) => setName(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
               placeholder="Masukkan nama Anda"
+              required
+            />
+          </div>
+
+          <div>
+            <label htmlFor="UserName" className="block text-sm font-medium text-gray-700 mb-1">
+              UserName
+            </label>
+            <input
+              type="UserName"
+              id="UserName"
+              value={UserName}
+              onChange={(e) => setUserName(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              placeholder="Masukkan UserName Anda"
               required
             />
           </div>
@@ -114,6 +137,20 @@ const RegisterPage = () => {
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
               placeholder="Ulangi password"
               required
+              minLength={6}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="NomorTelepon" className="block text-sm font-medium text-gray-700 mb-1">
+              NomorTelepon
+            </label>
+            <input
+              type="NomorTelepon"
+              id="NomorTelepon"
+              value={NomorTelepon}
+              onChange={(e) => setNomorTelepon(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
               minLength={6}
             />
           </div>
