@@ -23,7 +23,7 @@ const Navbar = ({ children }) => {
         </Link>
         <div>
           <Link href="/home">
-            <a className="mx-4 hover:text-gray-300">Home</a>
+             <a className="mx-4 hover:text-gray-300">Home</a>
           </Link>
           <Link href="/book-online">
             <a className="mx-4 hover:text-gray-300">Book Online</a>
