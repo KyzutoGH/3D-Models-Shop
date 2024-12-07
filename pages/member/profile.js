@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getSession, signOut } from 'next-auth/react';
+import { useRouter } from "next/router";
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
@@ -21,6 +22,8 @@ export async function getServerSideProps(context) {
 }
 
 const Profile = ({ session }) => {
+  const router = useRouter();
+
   const user = session?.user || {};
   const [greeting, setGreeting] = useState('');
 
@@ -37,6 +40,33 @@ const Profile = ({ session }) => {
   });
 
   useEffect(() => {
+    // Periksa token di localStorage
+    const token = localStorage.getItem("token");
+    console.log(token)
+    const userRole = localStorage.getItem("role");
+    console.log(userRole);
+    if (!token) {
+      router.push("/login"); // Redirect jika tidak ada token
+    } else {
+      // Validasi token di server jika diperlukan
+      fetch("/api/validate-token", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error("Token invalid");
+          }
+        })
+        .catch(() => {
+          localStorage.removeItem("token"); // Hapus token jika tidak valid
+          router.push("/login"); // Redirect ke login
+        });
+    }
+    
     const currentHour = new Date().getHours();
     let greetingMessage = '';
 
