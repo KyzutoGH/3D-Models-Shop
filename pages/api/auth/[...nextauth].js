@@ -1,89 +1,117 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import CredentialsProvider from "next-auth/providers/credentials";
 import db from "../../../lib/db";
 
-export default NextAuth({
+const authOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      async profile(profile) {
+        const conn = await db.getConnection();
+        const [user] = await conn.query(
+          "SELECT * FROM users WHERE email = ?",
+          [profile.email]
+        );
+
+        if (user.length === 0) {
+          // If user does not exist, create a new user entry
+          const [newUser] = await conn.query(
+            "INSERT INTO users (email, name, role) VALUES (?, ?, ?)",
+            [profile.email, profile.name, "member"] // Default role as 'user'
+          );
+          conn.release();
+          return {
+            id: newUser.insertId,
+            email: profile.email,
+            name: profile.name,
+            role: "user", // Set default role
+          };
+        } else {
+          conn.release();
+          const dbUser = user[0];
+          return {
+            id: dbUser.id,
+            email: dbUser.email,
+            name: dbUser.name,
+            role: dbUser.role,
+          };
+        }
+      },
+    }),
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "email", placeholder: "your@email.com" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        try {
+          const conn = await db.getConnection();
+          const [user] = await conn.query(
+            "SELECT * FROM users WHERE email = ?",
+            [credentials.email]
+          );
+
+          if (user.length === 0) {
+            throw new Error("No user found with the given email");
+          }
+
+          const dbUser = user[0];
+
+          if (credentials.password !== dbUser.password) {
+            throw new Error("Invalid credentials");
+          }
+
+          conn.release();
+
+          return {
+            id: dbUser.id,
+            name: dbUser.name,
+            email: dbUser.email,
+            role: dbUser.role,
+          };
+        } catch (error) {
+          console.error("Credentials error:", error);
+          throw new Error("Login failed");
+        }
+      },
     }),
   ],
   callbacks: {
-    async signIn({ user, account }) {
-      if (account.provider === "google") {
-        try {
-          const conn = await db.getConnection();
-
-          // Periksa apakah pengguna sudah ada
-          const [existingUser] = await conn.query(
-            "SELECT * FROM users WHERE email = ?",
-            [user.email]
-          );
-
-          if (existingUser.length === 0) {
-            // Tambahkan pengguna baru jika belum ada
-            const formattedDate = new Date()
-              .toISOString()
-              .slice(0, 19)
-              .replace("T", " ");
-            await conn.query(
-              "INSERT INTO users (email, name, role, tgl_register) VALUES (?, ?, ?, ?)",
-              [user.email, user.name, "member", formattedDate]
-            );
-          }
-
-          conn.release();
-          return true;
-        } catch (error) {
-          console.error("Database error during signIn:", error);
-          return false;
-        }
-      }
-      return true;
-    },
-
     async jwt({ token, user }) {
       if (user) {
-        try {
-          const conn = await db.getConnection();
-
-          // Ambil data dari database
-          const [dbUser] = await conn.query(
-            "SELECT id, role FROM users WHERE email = ?",
-            [user.email]
-          );
-
-          if (dbUser.length > 0) {
-            token.role = dbUser[0].role;
-            token.id = dbUser[0].id;
-          }
-
-          conn.release();
-        } catch (error) {
-          console.error("JWT database error:", error);
-        }
+        token.id = user.id;
+        token.role = user.role;
       }
       return token;
     },
-
     async session({ session, token }) {
-      // Tambahkan data dari token ke session
-      session.user.role = token.role;
       session.user.id = token.id;
+      session.user.role = token.role;
       return session;
     },
   },
   pages: {
-    signIn: "/auth/signin",
-    error: "/auth/error",
+    signIn: "/auth/signin", // Custom sign-in page
+    error: "/auth/error",   // Custom error page
   },
-});
-const onLogout = async (e) => {
-  e.preventDefault();
-
-  await signOut({
-    callbackUrl: "/login", // Redirect setelah logout
-    redirect: true,
-  });
+  session: {
+    strategy: "jwt", // Use JWT session strategy
+    maxAge: 30 * 24 * 60 * 60, // Session expiry time
+  },
+  cookies: {
+    sessionToken: {
+      name: 'next-auth.session-token',
+      options: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // Ensure secure cookies in production
+        sameSite: 'lax',
+        path: '/',
+      },
+    },
+  },
 };
+
+export default NextAuth(authOptions);
