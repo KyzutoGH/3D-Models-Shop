@@ -19,17 +19,17 @@ const Navbar = ({ children }) => {
   return (
     <nav className="bg-slate-900 text-yellow-700 py-4">
       <div className="container mx-auto flex justify-between items-center">
-        <Link href="/" className="text-xl font-bold flex items-center">
+        <Link href="/" className="text-xl font-bold flex items-center pb-3">
           <div className="flex items-center mx-2">
             <Image
               src="/IconShopBlk.png"
               width={50}
               height={43}
               alt="Picture of the author"/>
-            Punya Bapak
+              <h5 className="ml-2">Punya Bapak</h5>
           </div>
         </Link>
-        <div className="flex">
+        <div className="flex items-center text-lg">
           <Link href="/home" className="mx-2 hover:text-gray-300">
             Home
           </Link>
@@ -42,6 +42,10 @@ const Navbar = ({ children }) => {
           <Link href="/cart" className="mx-2 hover:text-gray-300">
             Cart (0)
           </Link>
+          <button 
+          className="p-1 box-content h-auto w-auto mx-2 border-1 rounded-lg bg-orange-300 text-black hover:bg-orange-400 active:bg-orange-500 focus:outline-none focus:ring focus:ring-orange-300">
+            Login
+          </button>
         </div>
       </div>
       <div>{children}</div> {/* Render children here */}
