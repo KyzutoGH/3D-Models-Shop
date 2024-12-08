@@ -50,11 +50,14 @@ const Navbar = ({ children }) => {
 };
 
 // Define the Layout component
-const Layout = () => {
-  return (
+const Layout = ({children}) => {
+    return (
+  <div>
     <Navbar>
       <Content />
     </Navbar>
+    <main>{children}</main>
+  </div>
   );
 };
 
