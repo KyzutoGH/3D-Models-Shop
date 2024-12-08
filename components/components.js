@@ -3,7 +3,7 @@ import Image from "next/image";
 
 const Content = () => {
   return (
-    <div className="py-20 bg-emerald-500">
+    <div className="py-20 bg-slate-800">
       <div className="container mx-auto">
         <h1 className="text-4xl font-bold mb-8 flex items-center justify-center">Discover Our Creations</h1>
         <p className="text-lg mb-12 flex items-center justify-center">Exploring a World of 3D Models and Designs</p>
@@ -17,7 +17,7 @@ const Content = () => {
 
 const Navbar = ({ children }) => {
   return (
-    <nav className="bg-emerald-700 text-white py-4">
+    <nav className="bg-slate-900 text-yellow-700 py-4">
       <div className="container mx-auto flex justify-between items-center">
         <Link href="/" className="text-xl font-bold flex items-center">
           <div className="flex items-center">
