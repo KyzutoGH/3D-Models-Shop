@@ -20,9 +20,9 @@ const Navbar = ({ children }) => {
     <nav className="bg-slate-900 text-yellow-700 py-4">
       <div className="container mx-auto flex justify-between items-center">
         <Link href="/" className="text-xl font-bold flex items-center">
-          <div className="flex items-center">
+          <div className="flex items-center mx-2">
             <Image
-              src="/Logo3DShop.png"
+              src="/IconShopBlk.png"
               width={50}
               height={43}
               alt="Picture of the author"/>

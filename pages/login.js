@@ -76,7 +76,7 @@ const LoginPage = () => {
         <div className="flex items-center justify-center mb-6">
           <div className="bg-white w-12 h-12 flex items-center justify-center text-white rounded">
             <Image
-              src="/Logo3DShopBL.png"
+              src="/IconShopBlk.png"
               width={580}
               height={430}
               alt="Picture of the author"
