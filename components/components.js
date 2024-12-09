@@ -30,7 +30,7 @@ const Navbar = ({ children }) => {
           </div>
         </Link>
         <div className="flex items-center text-lg">
-          <Link href="/home" className="mx-2 hover:text-gray-300">
+          <Link href="/" className="mx-2 hover:text-gray-300">
             Home
           </Link>
           <Link href="/book-online" className="mx-2 hover:text-gray-300">
@@ -40,11 +40,11 @@ const Navbar = ({ children }) => {
             Shop
           </Link>
           <Link href="/cart" className="mx-2 hover:text-gray-300">
-            Cart (0)
+            Cart
           </Link>
           <button 
           className="p-1 box-content h-auto w-auto mx-2 border-1 rounded-lg bg-orange-300 text-black hover:bg-orange-400 active:bg-orange-500 focus:outline-none focus:ring focus:ring-orange-300">
-            Login
+            <Link href="login">Login</Link>
           </button>
         </div>
       </div>

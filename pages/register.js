@@ -15,8 +15,13 @@ const RegisterPage = () => {
   const router = useRouter();
   const { data: session } = useSession();
 
+  if (session) {
+    return <p>You are already logged in!</p>;
+  };
+  console.log("useSession:", useSession);
   const handleRegister = async (e) => {
     e.preventDefault();
+
     
     if (password !== confirmPassword) {
       alert("Passwords do not match");
@@ -27,7 +32,7 @@ const RegisterPage = () => {
       const response = await fetch('/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password })
+        body: JSON.stringify({ name, UserName, email, password, NomorTelepon })
       });
 
       if (response.ok) {
@@ -41,6 +46,7 @@ const RegisterPage = () => {
       alert("An error occurred during registration");
     }
   };
+
 
   const handleGoogleRegister = () => {
     signIn("google", { callbackUrl: '/profile' });
@@ -146,12 +152,14 @@ const RegisterPage = () => {
               NomorTelepon
             </label>
             <input
-              type="NomorTelepon"
+              type="text"
               id="NomorTelepon"
               value={NomorTelepon}
               onChange={(e) => setNomorTelepon(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
               minLength={6}
+              placeholder="Masukkan Nomor Telepon"
+              required
             />
           </div>
 

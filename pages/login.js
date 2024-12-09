@@ -13,7 +13,7 @@ const LoginPage = () => {
   const { data: session } = useSession();
 
   // Redirect if already authenticated
-  useEffect(() => {
+  useEffect(() => { 
     if (session) {
       redirectBasedOnRole(session.user.role);
     }
@@ -22,13 +22,13 @@ const LoginPage = () => {
   const redirectBasedOnRole = (role) => {
     switch (role) {
       case "admin":
-        router.push("/admin/dashboard");
+        router.push("admin/dashboard");
         break;
       case "artist":
-        router.push("/artist/profile");
+        router.push("artist/profile");
         break;
       default:
-        router.push("/member/profile");
+        router.push("member/profile");
     }
   };
 
