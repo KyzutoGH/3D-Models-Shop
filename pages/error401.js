@@ -73,7 +73,7 @@ const Error401Page = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
             <Link href="/login" passHref>
               <button className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium">
-                Return to Homepage
+                Return
               </button>
             </Link>
           </div>
