@@ -65,6 +65,53 @@ const products = [
     price: '310000',
     imageSrc: '/img/lego_postur.png',
     imageAlt: 'Hand holding black machined steel mechanical pencil with brass tip and top.',
+  },
+  {
+    id:9,
+    name: 'Airpods',
+    href: '#',
+    price: '125000',
+    imageSrc: '/img/airpods.png',
+    imageAlt: 'Hand holding black machined steel mechanical pencil with brass tip and top.',
+  },
+  {
+    id:10,
+    name: 'Sneaker',
+    href: '#',
+    price: '380000',
+    imageSrc: '/img/sneaker.jpg',
+    imageAlt: 'Hand holding black machined steel mechanical pencil with brass tip and top.',
+  },
+  {
+    id:11,
+    name: 'Spider Monster',
+    href: '#',
+    price: '793000',
+    imageSrc: '/img/spider.png',
+    imageAlt: 'Hand holding black machined steel mechanical pencil with brass tip and top.',
+  },{
+    id:12,
+    name: 'Anime Trees',
+    href: '#',
+    price: '634000',
+    imageSrc: '/img/trees.jpg',
+    imageAlt: 'Hand holding black machined steel mechanical pencil with brass tip and top.',
+  },
+  {
+    id:13,
+    name: '3D Sofa',
+    href: '#',
+    price: '125000',
+    imageSrc: '/img/sofa.jpg',
+    imageAlt: 'Hand holding black machined steel mechanical pencil with brass tip and top.',
+  },
+  {
+    id:14,
+    name: 'Teratai',
+    href: '#',
+    price: '634000',
+    imageSrc: '/img/teratai.jpg',
+    imageAlt: 'Hand holding black machined steel mechanical pencil with brass tip and top.',
   }
   // More products...
 ];
