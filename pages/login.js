@@ -13,7 +13,7 @@ const LoginPage = () => {
   const { data: session } = useSession();
 
   // Redirect if already authenticated
-  useEffect(() => {
+  useEffect(() => { 
     if (session) {
       redirectBasedOnRole(session.user.role);
     }
@@ -22,13 +22,13 @@ const LoginPage = () => {
   const redirectBasedOnRole = (role) => {
     switch (role) {
       case "admin":
-        router.push("/admin/dashboard");
+        router.push("admin/dashboard");
         break;
       case "artist":
-        router.push("/artist/profile");
+        router.push("artist/profile");
         break;
       default:
-        router.push("/member/profile");
+        router.push("member/profile");
     }
   };
 
@@ -76,7 +76,7 @@ const LoginPage = () => {
         <div className="flex items-center justify-center mb-6">
           <div className="bg-white w-12 h-12 flex items-center justify-center text-white rounded">
             <Image
-              src="/Logo3DShopBL.png"
+              src="/IconShopBlk.png"
               width={580}
               height={430}
               alt="Picture of the author"
