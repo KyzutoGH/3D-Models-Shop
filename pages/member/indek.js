@@ -1,155 +1,122 @@
 import React from 'react';
-import Head from 'next/head';
-import Image from "next/image";
 
-const HomePageMember = () => {
+export default function Home() {
   return (
-    <>
-      <Head>
-        <title>Home | PunyaBapak</title>
-        <meta name="description" content="Welcome to PunyaBapak Store" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-      </Head>
-      <div style={styles.container}>
-        {/* Header / Navigation */}
-        <header style={styles.header}>
-          <nav style={styles.nav}>
-            {/* Logo */}
-            <div style={styles.logo}>
-              <div style={styles.logoBox}><Image
-              src="/Logo3DShopBL.png"
-              width={580}
-              height={430}
-              alt="Picture of the author"
-            /></div>
-              <span style={styles.logoText}>PunyaBapak</span>
-            </div>
-
-            {/* Pencarian */}
-            <input type="text" placeholder="Pencarian" style={styles.searchInput} />
-
-            {/* Masuk Button */}
-            <button style={styles.loginButton}>Masuk</button>
-          </nav>
-        </header>
-
-        {/* Main Content - Grid Produk */}
-        <main style={styles.main}>
-          <h1 style={styles.title}>Welcome to PunyaBapak Store</h1>
-          <p style={styles.description}>Explore our amazing products!</p>
-
-          {/* Grid Produk */}
-          <div style={styles.productGrid}>
-            {Array.from({ length: 8 }).map((_, index) => (
-              <div key={index} style={styles.product}>
-                Barang {index + 1}
-              </div>
-            ))}
+    <div>
+      <header className="bg-blue-700 text-white py-4">
+        <div className="container mx-auto flex justify-between items-center">
+          <div className="flex items-center">
+            <img src="/logo.svg" alt="PunyaBapak Store" className="h-8 mr-4" />
+            <h1 className="text-2xl font-bold">PunyaBapak Store</h1>
           </div>
-        </main>
+          <div className="flex items-center">
+            <input
+              type="text"
+              placeholder="Cari produk"
+              className="px-4 py-2 rounded-md border-2 border-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-700 focus:border-transparent mr-4"
+            />
+            <button className="bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded-md">
+              Masuk
+            </button>
+          </div>
+        </div>
+      </header>
 
-        {/* Footer */}
-        <footer style={styles.footer}>
-          <p>© 2024 PunyaBapak. All rights reserved.</p>
-        </footer>
-      </div>
-    </>
+      <main className="container mx-auto py-8">
+        <h2 className="text-2xl font-bold mb-4">Selamat Datang di PunyaBapak Store</h2>
+        <p className="mb-8 text-gray-600">Jelajahi produk-produk menarik kami!</p>
+
+        <div className="grid grid-cols-4 gap-6">
+          <div className="bg-blue-700 text-white p-4 rounded-md hover:bg-blue-800 transition-colors duration-300">
+            <img src="/product1.jpg" alt="Barang 1" className="mb-4 rounded-md" />
+            <h3 className="text-lg font-medium mb-2">Barang 1</h3>
+            <p className="text-gray-200">Deskripsi singkat produk 1</p>
+            <div className="mt-4">
+              <span className="text-green-500 font-medium">Rp 50.000</span>
+              <button className="bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded-md float-right">
+                Beli
+              </button>
+            </div>
+          </div>
+          <div className="bg-blue-700 text-white p-4 rounded-md hover:bg-blue-800 transition-colors duration-300">
+            <img src="/product2.jpg" alt="Barang 2" className="mb-4 rounded-md" />
+            <h3 className="text-lg font-medium mb-2">Barang 2</h3>
+            <p className="text-gray-200">Deskripsi singkat produk 2</p>
+            <div className="mt-4">
+              <span className="text-green-500 font-medium">Rp 75.000</span>
+              <button className="bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded-md float-right">
+                Beli
+              </button>
+            </div>
+          </div>
+          <div className="bg-blue-700 text-white p-4 rounded-md hover:bg-blue-800 transition-colors duration-300">
+            <img src="/product3.jpg" alt="Barang 3" className="mb-4 rounded-md" />
+            <h3 className="text-lg font-medium mb-2">Barang 3</h3>
+            <p className="text-gray-200">Deskripsi singkat produk 3</p>
+            <div className="mt-4">
+              <span className="text-green-500 font-medium">Rp 100.000</span>
+              <button className="bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded-md float-right">
+                Beli
+              </button>
+            </div>
+          </div>
+          <div className="bg-blue-700 text-white p-4 rounded-md hover:bg-blue-800 transition-colors duration-300">
+            <img src="/product4.jpg" alt="Barang 4" className="mb-4 rounded-md" />
+            <h3 className="text-lg font-medium mb-2">Barang 4</h3>
+            <p className="text-gray-200">Deskripsi singkat produk 4</p>
+            <div className="mt-4">
+              <span className="text-green-500 font-medium">Rp 125.000</span>
+              <button className="bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded-md float-right">
+                Beli
+              </button>
+            </div>
+          </div>
+          <div className="bg-blue-700 text-white p-4 rounded-md hover:bg-blue-800 transition-colors duration-300">
+            <img src="/product5.jpg" alt="Barang 5" className="mb-4 rounded-md" />
+            <h3 className="text-lg font-medium mb-2">Barang 5</h3>
+            <p className="text-gray-200">Deskripsi singkat produk 5</p>
+            <div className="mt-4">
+              <span className="text-green-500 font-medium">Rp 150.000</span>
+              <button className="bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded-md float-right">
+                Beli
+              </button>
+            </div>
+          </div>
+          <div className="bg-blue-700 text-white p-4 rounded-md hover:bg-blue-800 transition-colors duration-300">
+            <img src="/product6.jpg" alt="Barang 6" className="mb-4 rounded-md" />
+            <h3 className="text-lg font-medium mb-2">Barang 6</h3>
+            <p className="text-gray-200">Deskripsi singkat produk 6</p>
+            <div className="mt-4">
+              <span className="text-green-500 font-medium">Rp 175.000</span>
+              <button className="bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded-md float-right">
+                Beli
+              </button>
+            </div>
+          </div>
+          <div className="bg-blue-700 text-white p-4 rounded-md hover:bg-blue-800 transition-colors duration-300">
+            <img src="/product7.jpg" alt="Barang 7" className="mb-4 rounded-md" />
+            <h3 className="text-lg font-medium mb-2">Barang 7</h3>
+            <p className="text-gray-200">Deskripsi singkat produk 7</p>
+            <div className="mt-4">
+              <span className="text-green-500 font-medium">Rp 200.000</span>
+              <button className="bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded-md float-right">
+                Beli
+              </button>
+            </div>
+          </div>
+          <div className="bg-blue-700 text-white p-4 rounded-md hover:bg-blue-800 transition-colors duration-300">
+            <img src="/product8.jpg" alt="Barang 8" className="mb-4 rounded-md" />
+            <h3 className="text-lg font-medium mb-2">Barang 8</h3>
+            <p className="text-gray-200">Deskripsi singkat produk 8</p>
+            <div className="mt-4">
+              <span className="text-green-500 font-medium">Rp 225.000</span>
+              <button className="bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded-md float-right">
+                Beli
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
   );
-};
-
-// CSS-in-JS Styling
-const styles = {
-  container: {
-    fontFamily: 'Arial, sans-serif',
-    lineHeight: 1.6,
-    color: '#333',
-    margin: 0,
-    padding: 0,
-  },
-  header: {
-    background: '#0070f3',
-    padding: '10px 20px',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  nav: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    width: '100%',
-    alignItems: 'center',
-  },
-  logo: {
-    display: 'flex',
-    alignItems: 'center',
-  },
-  logoBox: {
-    width: '50px',
-    height: '50px',
-    backgroundColor: 'white',
-    color: '#0070f3',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontWeight: 'bold',
-  },
-  logoText: {
-    marginLeft: '10px',
-    fontSize: '20px',
-    color: 'white',
-  },
-  searchInput: {
-    width: '60%',
-    padding: '10px',
-    border: 'none',
-    borderRadius: '5px',
-    fontSize: '16px',
-    margin: '0 20px',
-  },
-  loginButton: {
-    padding: '10px 20px',
-    backgroundColor: 'white',
-    color: '#0070f3',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    fontWeight: 'bold',
-  },
-  main: {
-    padding: '20px',
-    textAlign: 'center',
-  },
-  title: {
-    fontSize: '2.5rem',
-    margin: '20px 0',
-  },
-  description: {
-    fontSize: '1.2rem',
-    color: '#555',
-  },
-  productGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-    gap: '20px',
-    padding: '20px',
-  },
-  product: {
-    backgroundColor: '#0070f3',
-    color: 'white',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '150px',
-    fontWeight: 'bold',
-    borderRadius: '5px',
-    textAlign: 'center',
-  },
-  footer: {
-    textAlign: 'center',
-    padding: '10px 0',
-    backgroundColor: '#f1f1f1',
-    marginTop: '20px',
-  },
-};
-
-export default HomePageMember;
+}
