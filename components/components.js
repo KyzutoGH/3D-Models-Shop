@@ -33,9 +33,6 @@ const Navbar = ({ children }) => {
           <Link href="/" className="mx-2 hover:text-gray-300">
             Home
           </Link>
-          <Link href="/book-online" className="mx-2 hover:text-gray-300">
-            Book Online
-          </Link>
           <Link href="/shop" className="mx-2 hover:text-gray-300">
             Shop
           </Link>
