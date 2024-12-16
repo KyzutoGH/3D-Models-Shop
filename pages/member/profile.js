@@ -18,7 +18,8 @@ import {
   Shield,
   Palette,
   Edit2,
-  Settings
+  Settings,
+  ArrowLeft
 } from 'lucide-react';
 
 export async function getServerSideProps(context) {
@@ -173,9 +174,11 @@ const Profile = ({ session }) => {
         };
     }
   };
+
   const handleEditClick = () => {
     router.push("/cruds/edit");
   };
+
   const { Icon, color, bgColor } = getBadgeContent(formData.role);
 
   return (
@@ -183,7 +186,8 @@ const Profile = ({ session }) => {
       <div className="max-w-7xl mx-auto px-4">
         {/* Header Section */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-          <div className="flex items-center justify-between">
+          {/* User Info and Buttons */}
+          <div className="flex items-center justify-between mb-8">
             <div className="flex items-center space-x-4">
               <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center">
                 <UserCircle className="w-10 h-10 text-white" />
@@ -195,165 +199,167 @@ const Profile = ({ session }) => {
                 <p className="text-gray-600">{greeting}, {formData.username}</p>
               </div>
             </div>
-            {/* <button
-              onClick={handleEditClick}
-              className="flex items-center space-x-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
-            >
-              <Settings className="w-4 h-4" />
-              <span>Edit Profile</span>
-            </button> */}
-            <button
-              onClick={onLogout}
-              className="flex items-center space-x-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors"
-            >
-              <LogOut className="w-4 h-4" />
-              <span>Log out</span>
-            </button>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Left Column - Photo and Status */}
-          <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <div className="flex flex-col items-center">
-                <div className="relative">
-                  <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center">
-                    <Camera className="w-12 h-12 text-gray-400" />
-                  </div>
-                  <button
-                    className="absolute bottom-0 right-0 bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full shadow-lg transition-colors"
-                    aria-label="Update profile picture"
-                  >
-                    <Camera className="w-4 h-4" />
-                  </button>
-                </div>
-                <h2 className="mt-4 text-xl font-semibold text-gray-800">
-                  {formData.username}
-                </h2>
-                <p className="text-gray-600">{formData.email}</p>
-                <div className="mt-4 flex items-center space-x-2">
-                  <div className={`p-2 rounded-full ${bgColor}`}>
-                    <Icon className={`w-4 h-4 ${color}`} />
-                  </div>
-                  <span className="text-sm text-gray-600">
-                    Anda adalah {formData.role || 'Pengguna'}
-                  </span>
-                </div>
-              </div>
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => router.push('/member/')}
+                className="flex items-center space-x-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span>Back to Home</span>
+              </button>
+              <button
+                onClick={onLogout}
+                className="flex items-center space-x-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+                <span>Log out</span>
+              </button>
             </div>
           </div>
 
-          {/* Right Column - User Information */}
-          <div className="md:col-span-2">
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-semibold text-gray-800">
-                  Informasi Pribadi
-                </h2>
-                {/* New Quick Edit Button */}
-                <button
-                  onClick={handleEditClick}
-                  className="flex items-center space-x-1 text-blue-500 hover:text-blue-600 transition-colors"
-                >
-                  <Edit2 className="w-4 h-4" />
-                  <span className="text-sm">Edit</span>
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-3">
-                    <User className="w-5 h-5 text-gray-400" />
-                    <div>
-                      <p className="text-sm text-gray-500">Username</p>
-                      <p className="text-gray-800">{formData.username}</p>
+          {/* Profile Content */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Left Column - Photo and Status */}
+            <div className="space-y-6">
+              <div className="bg-white rounded-lg shadow-lg p-6">
+                <div className="flex flex-col items-center">
+                  <div className="relative">
+                    <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center">
+                      <Camera className="w-12 h-12 text-gray-400" />
                     </div>
+                    <button
+                      className="absolute bottom-0 right-0 bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full shadow-lg transition-colors"
+                      aria-label="Update profile picture"
+                    >
+                      <Camera className="w-4 h-4" />
+                    </button>
                   </div>
-
-                  <div className="flex items-center space-x-3">
-                    <Phone className="w-5 h-5 text-gray-400" />
-                    <div>
-                      <p className="text-sm text-gray-500">Nomor Telepon</p>
-                      <p className="text-gray-800">
-                        {formData.phoneNumber || 'Belum diisi'}
-                      </p>
+                  <h2 className="mt-4 text-xl font-semibold text-gray-800">
+                    {formData.username}
+                  </h2>
+                  <p className="text-gray-600">{formData.email}</p>
+                  <div className="mt-4 flex items-center space-x-2">
+                    <div className={`p-2 rounded-full ${bgColor}`}>
+                      <Icon className={`w-4 h-4 ${color}`} />
                     </div>
-                  </div>
-
-                  <div className="flex items-center space-x-3">
-                    <Mail className="w-5 h-5 text-gray-400" />
-                    <div>
-                      <p className="text-sm text-gray-500">Email</p>
-                      <p className="text-gray-800">{formData.email}</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-3">
-                    <MapPin className="w-5 h-5 text-gray-400" />
-                    <div>
-                      <p className="text-sm text-gray-500">Alamat</p>
-                      <p className="text-gray-800">
-                        {formData.alamat || 'Belum diisi'}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-3">
-                    <Calendar className="w-5 h-5 text-gray-400" />
-                    <div>
-                      <p className="text-sm text-gray-500">Tanggal Daftar</p>
-                      <p className="text-gray-800">{formData.registrationDate}</p>
-                    </div>
+                    <span className="text-sm text-gray-600">
+                      Anda adalah {formData.role || 'Pengguna'}
+                    </span>
                   </div>
                 </div>
               </div>
+            </div>
 
-              <div className="mt-8">
-                <h2 className="text-xl font-semibold text-gray-800 mb-6">
-                  Informasi Transaksi
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="bg-blue-50 rounded-lg p-4">
+            {/* Right Column - User Information */}
+            <div className="md:col-span-2">
+              <div className="bg-white rounded-lg shadow-lg p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-xl font-semibold text-gray-800">
+                    Informasi Pribadi
+                  </h2>
+                  <button
+                    onClick={handleEditClick}
+                    className="flex items-center space-x-1 text-blue-500 hover:text-blue-600 transition-colors"
+                  >
+                    <Edit2 className="w-4 h-4" />
+                    <span className="text-sm">Edit</span>
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
                     <div className="flex items-center space-x-3">
-                      <ShoppingBag className="w-6 h-6 text-blue-500" />
+                      <User className="w-5 h-5 text-gray-400" />
                       <div>
-                        <p className="text-sm text-gray-500">
-                          Total Transaksi (Count)
+                        <p className="text-sm text-gray-500">Username</p>
+                        <p className="text-gray-800">{formData.username}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center space-x-3">
+                      <Phone className="w-5 h-5 text-gray-400" />
+                      <div>
+                        <p className="text-sm text-gray-500">Nomor Telepon</p>
+                        <p className="text-gray-800">
+                          {formData.phoneNumber || 'Belum diisi'}
                         </p>
-                        <p className="text-lg font-semibold text-gray-800">
-                          {formData.transactionStatus}
-                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center space-x-3">
+                      <Mail className="w-5 h-5 text-gray-400" />
+                      <div>
+                        <p className="text-sm text-gray-500">Email</p>
+                        <p className="text-gray-800">{formData.email}</p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="bg-green-50 rounded-lg p-4">
+                  <div className="space-y-4">
                     <div className="flex items-center space-x-3">
-                      <CreditCard className="w-6 h-6 text-green-500" />
+                      <MapPin className="w-5 h-5 text-gray-400" />
                       <div>
-                        <p className="text-sm text-gray-500">
-                          Nilai Total Transaksi (Rp)
-                        </p>
-                        <p className="text-lg font-semibold text-gray-800">
-                          Rp {parseInt(formData.totalNominalTransaction).toLocaleString('id-ID')}
+                        <p className="text-sm text-gray-500">Alamat</p>
+                        <p className="text-gray-800">
+                          {formData.alamat || 'Belum diisi'}
                         </p>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="bg-purple-50 rounded-lg p-4">
                     <div className="flex items-center space-x-3">
-                      <TrendingUp className="w-6 h-6 text-purple-500" />
+                      <Calendar className="w-5 h-5 text-gray-400" />
                       <div>
-                        <p className="text-sm text-gray-500">
-                          Transaksi Terbesar (Rp)
-                        </p>
-                        <p className="text-lg font-semibold text-gray-800">
-                          Rp {parseInt(formData.totalTransaction).toLocaleString('id-ID')}
-                        </p>
+                        <p className="text-sm text-gray-500">Tanggal Daftar</p>
+                        <p className="text-gray-800">{formData.registrationDate}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-8">
+                  <h2 className="text-xl font-semibold text-gray-800 mb-6">
+                    Informasi Transaksi
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="bg-blue-50 rounded-lg p-4">
+                      <div className="flex items-center space-x-3">
+                        <ShoppingBag className="w-6 h-6 text-blue-500" />
+                        <div>
+                          <p className="text-sm text-gray-500">
+                            Total Transaksi (Count)
+                          </p>
+                          <p className="text-lg font-semibold text-gray-800">
+                            {formData.transactionStatus}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-green-50 rounded-lg p-4">
+                      <div className="flex items-center space-x-3">
+                        <CreditCard className="w-6 h-6 text-green-500" />
+                        <div>
+                          <p className="text-sm text-gray-500">
+                            Nilai Total Transaksi (Rp)
+                          </p>
+                          <p className="text-lg font-semibold text-gray-800">
+                            Rp {parseInt(formData.totalNominalTransaction).toLocaleString('id-ID')}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-purple-50 rounded-lg p-4">
+                      <div className="flex items-center space-x-3">
+                        <TrendingUp className="w-6 h-6 text-purple-500" />
+                        <div>
+                          <p className="text-sm text-gray-500">
+                            Transaksi Terbesar (Rp)
+                          </p>
+                          <p className="text-lg font-semibold text-gray-800">
+                            Rp {parseInt(formData.totalTransaction).toLocaleString('id-ID')}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
