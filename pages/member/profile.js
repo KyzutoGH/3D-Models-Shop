@@ -95,7 +95,7 @@ const Profile = ({ session }) => {
       if (!user.id) return;
 
       try {
-        const response = await fetch(`/api/user/${user.id}`, {
+        const response = await fetch(`/api/users/${user.id}`, {
           timeout: 10000
         });
 
@@ -272,7 +272,7 @@ const Profile = ({ session }) => {
                       <User className="w-5 h-5 text-gray-400" />
                       <div>
                         <p className="text-sm text-gray-500">Username</p>
-                        <p className="text-gray-800">{formData.username}</p>
+                        <p className="text-gray-800">{formData.fullName}</p>
                       </div>
                     </div>
 

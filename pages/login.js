@@ -5,30 +5,29 @@ import { signIn, useSession, getSession } from "next-auth/react";
 import { useRouter } from "next/router";
 
 const LoginPage = () => {
-  const [email, setEmail] = useState("");
+  const [emailOrUsername, setEmailOrUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
 
-  // Redirect if already authenticated
-  useEffect(() => { 
-    if (session) {
+  useEffect(() => {
+    if (session && status === "authenticated") {
       redirectBasedOnRole(session.user.role);
     }
-  }, [session]);
+  }, [session, status]);
 
   const redirectBasedOnRole = (role) => {
     switch (role) {
       case "admin":
-        router.push("admin/dashboard");
+        router.push("/admin/dashboard");
         break;
       case "artist":
-        router.push("artist/profile");
+        router.push("/artist/profile");
         break;
       default:
-        router.push("member/profile");
+        router.push("/member/profile");
     }
   };
 
@@ -37,24 +36,31 @@ const LoginPage = () => {
     setLoading(true);
     setError("");
 
+    if (!emailOrUsername || !password) {
+      setError("Email/Username dan Password harus diisi");
+      setLoading(false);
+      return;
+    }
+
     try {
       const result = await signIn("credentials", {
         redirect: false,
-        email,
-        password,
+        emailOrUsername: emailOrUsername,
+        password: password,
       });
 
-      if (result.error) {
-        setError("Invalid email or password");
-      } else {
-        // NextAuth will handle the session update and redirect
-        // based on the role received from the server
+      if (result?.error) {
+        setError("Email/Username atau password salah");
+      } else if (result?.ok) {
+        const session = await getSession();
+        if (session) {
+          redirectBasedOnRole(session.user.role);
+        }
       }
     } catch (error) {
-      setError("An error occurred during login");
-    } finally {
-      setLoading(false);
+      setError("Terjadi kesalahan saat login");
     }
+    setLoading(false);
   };
 
   const handleGoogleLogin = async () => {
@@ -63,9 +69,8 @@ const LoginPage = () => {
 
     try {
       await signIn("google", { callbackUrl: "/api/auth/callback/google" });
-      // NextAuth will handle the redirect after successful authentication
     } catch (error) {
-      setError("Failed to login with Google");
+      setError("Gagal login dengan Google");
       setLoading(false);
     }
   };
@@ -75,12 +80,7 @@ const LoginPage = () => {
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         <div className="flex items-center justify-center mb-6">
           <div className="bg-white w-12 h-12 flex items-center justify-center text-white rounded">
-            <Image
-              src="/IconShopBlk.png"
-              width={580}
-              height={430}
-              alt="Picture of the author"
-            />
+            <Image src="/IconShopBlk.png" width={580} height={430} alt="Logo" />
           </div>
           <h1 className="text-2xl text-gray-600 ml-2 font-semibold">PunyaBapak</h1>
         </div>
@@ -95,16 +95,16 @@ const LoginPage = () => {
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email
+            <label htmlFor="emailOrUsername" className="block text-sm font-medium text-gray-700 mb-1">
+              Email atau Username
             </label>
             <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text"
+              id="emailOrUsername"
+              value={emailOrUsername}
+              onChange={(e) => setEmailOrUsername(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              placeholder="Enter your email"
+              placeholder="Masukkan email atau username"
               required
               disabled={loading}
             />
@@ -120,7 +120,7 @@ const LoginPage = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              placeholder="Enter your password"
+              placeholder="Masukkan password"
               required
               disabled={loading}
             />
@@ -172,12 +172,8 @@ const LoginPage = () => {
           onClick={handleGoogleLogin}
           className="w-full flex items-center justify-center gap-2 bg-white border border-gray-300 text-gray-700 py-2.5 rounded-md hover:bg-gray-50 transition-colors duration-200 font-medium disabled:opacity-50"
           disabled={loading}
-        ><Image
-            src="/google.png"
-            width={20}
-            height={20}
-            alt="Google Icon"
-          />
+        >
+          <Image src="/google.png" width={20} height={20} alt="Google Icon" />
           Login dengan mbah Google
         </button>
       </div>
@@ -185,29 +181,29 @@ const LoginPage = () => {
   );
 };
 
-// Server-side props to handle session
 export async function getServerSideProps(context) {
   const session = await getSession(context);
 
-  // If user is already logged in, redirect to appropriate page
   if (session) {
-    const redirectPath = getRedirectPath(session.user.role);
-    return {
-      redirect: {
-        destination: redirectPath,
-        permanent: false,
-      },
-    };
+    const pathname = context.req.url;
+    if (pathname.includes('/login')) {
+      const redirectPath = getRedirectPath(session.user.role);
+      return {
+        redirect: {
+          destination: redirectPath,
+          permanent: false,
+        },
+      };
+    }
   }
 
   return {
     props: {
-      session,
+      session: session || null,
     },
   };
 }
 
-// Helper function to determine redirect path based on role
 function getRedirectPath(role) {
   switch (role) {
     case "admin":

@@ -1,43 +1,78 @@
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession, signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 
 const RegisterPage = () => {
   const [name, setName] = useState("");
-  const [UserName, setUserName] = useState("");
+  const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [NomorTelepon, setNomorTelepon] = useState("");
+  const [nomorTelepon, setNomorTelepon] = useState("");
+  const [isGoogleRegister, setIsGoogleRegister] = useState(false);
+  const [userNameError, setUserNameError] = useState(""); // For userName error message
 
   const router = useRouter();
   const { data: session } = useSession();
 
+  useEffect(() => {
+    // Check if the user is being redirected from Google SignIn
+    if (router.query.google === "true") {
+      setEmail(router.query.email || "");  // Autofill email from query params
+      setName(router.query.name || "");    // Autofill name from query params
+      setIsGoogleRegister(true);  // Mark this as a Google registration
+    }
+  }, [router.query]);
+
   if (session) {
     return <p>You are already logged in!</p>;
+  }
+
+  // Validate the userName
+  const validateUserName = (name) => {
+    const userNameRegex = /^[a-z0-9_-]+$/; // Only lowercase letters, numbers, '-' and '_'
+    if (!userNameRegex.test(name)) {
+      setUserNameError("Username hanya boleh mengandung huruf kecil, angka, dan simbol '-' atau '_'. Tidak boleh mengandung spasi atau huruf kapital.");
+      return false;
+    }
+    setUserNameError(""); // Clear error if valid
+    return true;
   };
-  console.log("useSession:", useSession);
+
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    
+    // Validate the userName before proceeding with registration
+    if (!validateUserName(userName)) {
+      return;
+    }
+
     if (password !== confirmPassword) {
       alert("Passwords do not match");
       return;
     }
 
     try {
+      // Send data to the register API
       const response = await fetch('/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, UserName, email, password, NomorTelepon })
+        body: JSON.stringify({
+          email,
+          name,
+          userName,
+          password,
+          nomorTelepon,
+        }),
       });
 
       if (response.ok) {
+        // Redirect to login page on success
         router.push('/login');
       } else {
+        // Handle error from the API
         const errorData = await response.json();
         alert(errorData.message || "Registration failed");
       }
@@ -46,7 +81,6 @@ const RegisterPage = () => {
       alert("An error occurred during registration");
     }
   };
-
 
   const handleGoogleRegister = () => {
     signIn("google", { callbackUrl: '/profile' });
@@ -70,6 +104,7 @@ const RegisterPage = () => {
         <h2 className="text-center text-gray-600 mb-6">Toko Terbaik Dunia Akhirat</h2>
 
         <form onSubmit={handleRegister} className="space-y-4">
+          {/* Nama */}
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
               Nama
@@ -85,21 +120,25 @@ const RegisterPage = () => {
             />
           </div>
 
+          {/* Username */}
           <div>
-            <label htmlFor="UserName" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="userName" className="block text-sm font-medium text-gray-700 mb-1">
               UserName
             </label>
             <input
-              type="UserName"
-              id="UserName"
-              value={UserName}
+              type="text"
+              id="userName"
+              value={userName}
               onChange={(e) => setUserName(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
               placeholder="Masukkan UserName Anda"
               required
             />
+            {/* Display error message if validation fails */}
+            {userNameError && <p className="text-sm text-red-500 mt-1">{userNameError}</p>}
           </div>
 
+          {/* Email */}
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
               Email
@@ -112,9 +151,11 @@ const RegisterPage = () => {
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
               placeholder="Masukkan email Anda"
               required
+              disabled={isGoogleRegister} // Disable email input if Google login
             />
           </div>
 
+          {/* Password */}
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
               Password
@@ -131,6 +172,7 @@ const RegisterPage = () => {
             />
           </div>
 
+          {/* Confirm Password */}
           <div>
             <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700 mb-1">
               Konfirmasi Password
@@ -147,22 +189,24 @@ const RegisterPage = () => {
             />
           </div>
 
+          {/* Nomor Telepon */}
           <div>
-            <label htmlFor="NomorTelepon" className="block text-sm font-medium text-gray-700 mb-1">
-              NomorTelepon
+            <label htmlFor="nomorTelepon" className="block text-sm font-medium text-gray-700 mb-1">
+              Nomor Telepon
             </label>
             <input
               type="text"
-              id="NomorTelepon"
-              value={NomorTelepon}
+              id="nomorTelepon"
+              value={nomorTelepon}
               onChange={(e) => setNomorTelepon(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              minLength={6}
-              placeholder="Masukkan Nomor Telepon"
+              placeholder="Masukkan nomor telepon"
               required
+              minLength={6}
             />
           </div>
 
+          {/* Submit Button */}
           <div className="flex flex-col gap-3 mt-6">
             <button
               type="submit"
@@ -170,9 +214,9 @@ const RegisterPage = () => {
             >
               Registrasi
             </button>
-            
+
             <div className="flex justify-center text-sm text-gray-600">
-              Sudah punya akun? 
+              Sudah punya akun?
               <Link href="/login" className="ml-1 text-blue-600 hover:underline">
                 &nbsp;Login
               </Link>
