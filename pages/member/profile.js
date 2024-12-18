@@ -43,7 +43,6 @@ const Profile = ({ session }) => {
   const router = useRouter();
   const user = session?.user || {};
   const [greeting, setGreeting] = useState('');
-
   const [formData, setFormData] = useState({
     username: user.name || '',
     phoneNumber: user.hp || '',
@@ -58,42 +57,19 @@ const Profile = ({ session }) => {
   });
 
   useEffect(() => {
-    const validateToken = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        router.push("/login");
-        return;
-      }
+    const currentHour = new Date().getHours();
+    let greetingMessage = '';
+    if (currentHour >= 5 && currentHour < 10) greetingMessage = 'Selamat Pagi';
+    else if (currentHour >= 10 && currentHour < 15) greetingMessage = 'Selamat Siang';
+    else if (currentHour >= 15 && currentHour < 18) greetingMessage = 'Selamat Sore';
+    else greetingMessage = 'Selamat Malam';
+    setGreeting(greetingMessage);
+  }, []);
 
-      try {
-        const res = await fetch("/api/validate-token", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!res.ok) throw new Error("Token invalid");
-      } catch (error) {
-        localStorage.removeItem("token");
-        router.push("/login");
-      }
-    };
-
-    const updateGreeting = () => {
-      const currentHour = new Date().getHours();
-      let greetingMessage = '';
-      if (currentHour >= 5 && currentHour < 10) greetingMessage = 'Selamat Pagi';
-      else if (currentHour >= 10 && currentHour < 15) greetingMessage = 'Selamat Siang';
-      else if (currentHour >= 15 && currentHour < 18) greetingMessage = 'Selamat Sore';
-      else greetingMessage = 'Selamat Malam';
-      setGreeting(greetingMessage);
-    };
+  useEffect(() => {
+    if (!user.id) return;
 
     const fetchUserData = async () => {
-      if (!user.id) return;
-
       try {
         const response = await fetch(`/api/users/${user.id}`, {
           timeout: 10000
@@ -122,10 +98,8 @@ const Profile = ({ session }) => {
       }
     };
 
-    validateToken();
-    updateGreeting();
     fetchUserData();
-  }, [user.id, router]);
+  }, [user.id]);
 
   const onLogout = async (e) => {
     e.preventDefault();
@@ -184,9 +158,7 @@ const Profile = ({ session }) => {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4">
-        {/* Header Section */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-          {/* User Info and Buttons */}
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center space-x-4">
               <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center">
@@ -217,9 +189,7 @@ const Profile = ({ session }) => {
             </div>
           </div>
 
-          {/* Profile Content */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Left Column - Photo and Status */}
             <div className="space-y-6">
               <div className="bg-white rounded-lg shadow-lg p-6">
                 <div className="flex flex-col items-center">
@@ -250,7 +220,6 @@ const Profile = ({ session }) => {
               </div>
             </div>
 
-            {/* Right Column - User Information */}
             <div className="md:col-span-2">
               <div className="bg-white rounded-lg shadow-lg p-6">
                 <div className="flex justify-between items-center mb-6">
