@@ -17,12 +17,34 @@ export async function getServerSideProps(context) {
     };
   }
 
-  return {
-    props: { session },
-  };
+  try {
+    // Pastikan koneksi ke database telah diinisialisasi
+    if (!AppDataSource.isInitialized) {
+      await AppDataSource.initialize();
+    }
+
+    // Query data produk menggunakan TypeORM
+    const productRepository = AppDataSource.getRepository(Products);
+    const products = await productRepository.find();
+
+    return {
+      props: {
+        session,
+        products: JSON.parse(JSON.stringify(products)), // Serialize data untuk Next.js
+      },
+    };
+  }  catch (error) {
+    console.error('Error fetching products:', error);
+    return {
+      props: { 
+        session,
+        products: []
+      },
+    };
+  }
 }
 
-const HomePageMember = ({ session }) => {
+const HomePageMember = ({ session, products }) => {
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [greeting, setGreeting] = useState('');
@@ -32,10 +54,10 @@ const HomePageMember = ({ session }) => {
     const updateGreeting = () => {
       const currentHour = new Date().getHours();
       let greetingMessage = '';
-      if (currentHour >= 5 && currentHour < 10) greetingMessage = 'Selamat Pagi';
-      else if (currentHour >= 10 && currentHour < 15) greetingMessage = 'Selamat Siang';
-      else if (currentHour >= 15 && currentHour < 18) greetingMessage = 'Selamat Sore';
-      else greetingMessage = 'Selamat Malam';
+      if (currentHour >= 5 && currentHour < 10) greetingMessage = 'Selamat Pagi ';
+      else if (currentHour >= 10 && currentHour < 15) greetingMessage = 'Selamat Siang ';
+      else if (currentHour >= 15 && currentHour < 18) greetingMessage = 'Selamat Sore ';
+      else greetingMessage = 'Selamat Malam ';
       setGreeting(greetingMessage);
     };
 
@@ -64,11 +86,6 @@ const HomePageMember = ({ session }) => {
     router.push('/profile');
   };
 
-  const products = [
-    { id: 1, name: 'Product 1', price: 'Rp 150.000', image: '/api/placeholder/200/200' },
-    // ... other products
-  ];
-
   return (
     <>
       <Head>
@@ -86,7 +103,7 @@ const HomePageMember = ({ session }) => {
               <div className="flex items-center space-x-4">
                 <div className="w-10 h-10 relative">
                   <Image
-                    src="/Logo3DShopBL.png"
+                    src="/IconShopBlk.png"
                     alt="PunyaBapak Logo"
                     layout="fill"
                     objectFit="contain"
@@ -208,37 +225,42 @@ const HomePageMember = ({ session }) => {
 
           {/* Products Grid */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {products.map((product) => (
-              <div 
-                key={product.id} 
-                className="bg-white rounded-lg shadow-lg overflow-hidden transition-transform hover:scale-105 cursor-pointer"
-                onClick={() => router.push(`/member/product/${product.id}`)}
-              >
-                <div className="relative h-48">
-                  <Image
-                    src={product.image}
-                    alt={product.name}
-                    layout="fill"
-                    objectFit="cover"
-                  />
-                </div>
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2">{product.name}</h3>
-                  <p className="text-blue-500 font-bold">{product.price}</p>
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      router.push(`/member/product/${product.id}`);
-                    }}
-                    className="mt-4 w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center space-x-2"
-                  >
-                    <ArrowRight className="w-4 h-4" />
-                    <span>Lihat Detail</span>
-                  </button>
-                </div>
+          {products.map((product) => (
+            <div 
+              key={product.id} 
+              className="bg-white rounded-lg shadow-lg overflow-hidden transition-transform hover:scale-105 cursor-pointer"
+              onClick={() => router.push(`/member/product/${product.id}`)}
+            >
+              <div className="relative h-48">
+                <Image
+                  src={product.image || '/api/placeholder/200/200'} // Gunakan placeholder jika tidak ada gambar
+                  alt={product.name}
+                  layout="fill"
+                  objectFit="cover"
+                />
               </div>
-            ))}
-          </div>
+              <div className="p-4">
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">{product.name}</h3>
+                <p className="text-blue-500 font-bold">
+                  {new Intl.NumberFormat('id-ID', {
+                    style: 'currency',
+                    currency: 'IDR'
+                  }).format(product.price)}
+                </p>
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    router.push(`/member/product/${product.id}`);
+                  }}
+                  className="mt-4 w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center space-x-2"
+                >
+                  <ArrowRight className="w-4 h-4" />
+                  <span>Lihat Detail</span>
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
         </main>
 
         {/* Footer */}

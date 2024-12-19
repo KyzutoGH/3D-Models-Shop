@@ -52,7 +52,7 @@ const ProductDetailPage = ({ session }) => {
         name: '3D Model Character Anime',
         price: 150000,
         description: 'Model 3D karakter anime berkualitas tinggi dengan detail yang sempurna. Cocok untuk game, animasi, atau visualisasi.',
-        image: '/api/placeholder/400/400',
+        image: 'product-image.jpg',
         format: ['FBX', 'OBJ', 'GLB'],
         polygon_count: '10,000',
         textures: 'PBR Textures Included',
@@ -68,6 +68,7 @@ const ProductDetailPage = ({ session }) => {
           'File Size': '250 MB'
         }
       });
+      setProduct(fetchedProduct);
       setLoading(false);
     }
   }, [id]);
@@ -257,7 +258,7 @@ const ProductDetailPage = ({ session }) => {
               <div className="space-y-4">
                 <div className="relative aspect-square rounded-lg overflow-hidden">
                   <Image
-                    src={product.image}
+                    src={`/img/${product.image}`}
                     alt={product.name}
                     layout="fill"
                     objectFit="cover"

@@ -23,7 +23,7 @@ const products = [
     name: 'Storage Car Modern',
     href: '#',
     price: '47500',
-    imageSrc: '/img/gudang.jpeg',
+    imageSrc: '/img/  ',
     imageAlt: 'Person using a pen to cross a task off a productivity paper card.',
   },
   {
