@@ -83,7 +83,7 @@ const HomePageMember = ({ session, products }) => {
   };
 
   const navigateToProfile = () => {
-    router.push('/profile');
+    router.push('/member/profile');
   };
 
   return (
