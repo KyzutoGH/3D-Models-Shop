@@ -2,24 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { getSession, signOut } from 'next-auth/react';
 import { useRouter } from "next/router";
 import {
-  UserCircle,
-  Camera,
-  Badge,
-  LogOut,
-  Phone,
-  Mail,
-  MapPin,
-  User,
-  Calendar,
-  ShoppingBag,
-  CreditCard,
-  RefreshCcw,
-  TrendingUp,
-  Shield,
-  Palette,
-  Edit2,
-  Settings,
-  ArrowLeft
+  UserCircle, Camera, Badge, LogOut, Phone, Mail, MapPin, User,
+  Calendar, ShoppingBag, CreditCard, TrendingUp, Shield, Palette,
+  Edit2, Check, X, ArrowLeft
 } from 'lucide-react';
 
 export async function getServerSideProps(context) {
@@ -43,6 +28,8 @@ const Profile = ({ session }) => {
   const router = useRouter();
   const user = session?.user || {};
   const [greeting, setGreeting] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({
     username: user.name || '',
     phoneNumber: user.hp || '',
@@ -55,6 +42,7 @@ const Profile = ({ session }) => {
     totalTransaction: '0',
     role: user.role || 'member'
   });
+  const [editData, setEditData] = useState({...formData});
 
   useEffect(() => {
     const currentHour = new Date().getHours();
@@ -100,6 +88,54 @@ const Profile = ({ session }) => {
 
     fetchUserData();
   }, [user.id]);
+
+  const handleEditClick = () => {
+    setIsEditing(true);
+    setEditData({...formData});
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setEditData({...formData});
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSaveChanges = async () => {
+    setIsSaving(true);
+    try {
+      const response = await fetch(`/api/users/${user.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fullName: editData.fullName,
+          phoneNumber: editData.phoneNumber,
+          email: editData.email,
+          alamat: editData.alamat,
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to update profile');
+
+      setFormData(prev => ({
+        ...prev,
+        ...editData
+      }));
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error saving profile:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const onLogout = async (e) => {
     e.preventDefault();
@@ -149,8 +185,27 @@ const Profile = ({ session }) => {
     }
   };
 
-  const handleEditClick = () => {
-    router.push("/cruds/edit");
+  const renderEditableField = (label, icon, name, value, type = 'text') => {
+    const Icon = icon;
+    return (
+      <div className="flex items-center space-x-3">
+        <Icon className="w-5 h-5 text-gray-400" />
+        <div className="flex-1">
+          <p className="text-sm text-gray-500">{label}</p>
+          {isEditing ? (
+            <input
+              type={type}
+              name={name}
+              value={editData[name]}
+              onChange={handleInputChange}
+              className="w-full p-1 border rounded text-gray-800 focus:ring-2 focus:ring-blue-500"
+            />
+          ) : (
+            <p className="text-gray-800">{value || 'Belum diisi'}</p>
+          )}
+        </div>
+      </div>
+    );
   };
 
   const { Icon, color, bgColor } = getBadgeContent(formData.role);
@@ -226,55 +281,53 @@ const Profile = ({ session }) => {
                   <h2 className="text-xl font-semibold text-gray-800">
                     Informasi Pribadi
                   </h2>
-                  <button
-                    onClick={handleEditClick}
-                    className="flex items-center space-x-1 text-blue-500 hover:text-blue-600 transition-colors"
-                  >
-                    <Edit2 className="w-4 h-4" />
-                    <span className="text-sm">Edit</span>
-                  </button>
+                  {isEditing ? (
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={handleSaveChanges}
+                        disabled={isSaving}
+                        className="flex items-center space-x-1 text-green-500 hover:text-green-600 transition-colors"
+                      >
+                        <Check className="w-4 h-4" />
+                        <span className="text-sm">
+                          {isSaving ? 'Saving...' : 'Save'}
+                        </span>
+                      </button>
+                      <button
+                        onClick={handleCancelEdit}
+                        disabled={isSaving}
+                        className="flex items-center space-x-1 text-red-500 hover:text-red-600 transition-colors"
+                      >
+                        <X className="w-4 h-4" />
+                        <span className="text-sm">Cancel</span>
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={handleEditClick}
+                      className="flex items-center space-x-1 text-blue-500 hover:text-blue-600 transition-colors"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                      <span className="text-sm">Edit</span>
+                    </button>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
-                    <div className="flex items-center space-x-3">
+                  <div className="flex items-center space-x-3">
                       <User className="w-5 h-5 text-gray-400" />
                       <div>
                         <p className="text-sm text-gray-500">Username</p>
                         <p className="text-gray-800">{formData.fullName}</p>
                       </div>
                     </div>
-
-                    <div className="flex items-center space-x-3">
-                      <Phone className="w-5 h-5 text-gray-400" />
-                      <div>
-                        <p className="text-sm text-gray-500">Nomor Telepon</p>
-                        <p className="text-gray-800">
-                          {formData.phoneNumber || 'Belum diisi'}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center space-x-3">
-                      <Mail className="w-5 h-5 text-gray-400" />
-                      <div>
-                        <p className="text-sm text-gray-500">Email</p>
-                        <p className="text-gray-800">{formData.email}</p>
-                      </div>
-                    </div>
+                    {renderEditableField('Nomor Telepon', Phone, 'phoneNumber', formData.phoneNumber)}
+                    {renderEditableField('Email', Mail, 'email', formData.email, 'email')}
                   </div>
 
                   <div className="space-y-4">
-                    <div className="flex items-center space-x-3">
-                      <MapPin className="w-5 h-5 text-gray-400" />
-                      <div>
-                        <p className="text-sm text-gray-500">Alamat</p>
-                        <p className="text-gray-800">
-                          {formData.alamat || 'Belum diisi'}
-                        </p>
-                      </div>
-                    </div>
-
+                    {renderEditableField('Alamat', MapPin, 'alamat', formData.alamat)}
                     <div className="flex items-center space-x-3">
                       <Calendar className="w-5 h-5 text-gray-400" />
                       <div>

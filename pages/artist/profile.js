@@ -2,23 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { getSession, signOut } from 'next-auth/react';
 import { useRouter } from "next/router";
 import {
-  UserCircle,
-  Camera,
-  Badge,
-  LogOut,
-  Phone,
-  Mail,
-  MapPin,
-  User,
-  Calendar,
-  ShoppingBag,
-  CreditCard,
-  RefreshCcw,
-  TrendingUp,
-  Shield,
-  Palette,
-  Edit2,
-  Settings
+  UserCircle, Camera, Badge, LogOut, Phone, Mail, MapPin, User,
+  Calendar, ShoppingBag, CreditCard, TrendingUp, Shield, Palette,
+  Edit2, Check, X, ArrowLeft
 } from 'lucide-react';
 
 export async function getServerSideProps(context) {
@@ -42,7 +28,8 @@ const Profile = ({ session }) => {
   const router = useRouter();
   const user = session?.user || {};
   const [greeting, setGreeting] = useState('');
-
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({
     username: user.name || '',
     phoneNumber: user.hp || '',
@@ -55,46 +42,24 @@ const Profile = ({ session }) => {
     totalTransaction: '0',
     role: user.role || 'artist'
   });
+  const [editData, setEditData] = useState({...formData});
 
   useEffect(() => {
-    const validateToken = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        router.push("/login");
-        return;
-      }
+    const currentHour = new Date().getHours();
+    let greetingMessage = '';
+    if (currentHour >= 5 && currentHour < 10) greetingMessage = 'Selamat Pagi';
+    else if (currentHour >= 10 && currentHour < 15) greetingMessage = 'Selamat Siang';
+    else if (currentHour >= 15 && currentHour < 18) greetingMessage = 'Selamat Sore';
+    else greetingMessage = 'Selamat Malam';
+    setGreeting(greetingMessage);
+  }, []);
 
-      try {
-        const res = await fetch("/api/validate-token", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!res.ok) throw new Error("Token invalid");
-      } catch (error) {
-        localStorage.removeItem("token");
-        router.push("/login");
-      }
-    };
-
-    const updateGreeting = () => {
-      const currentHour = new Date().getHours();
-      let greetingMessage = '';
-      if (currentHour >= 5 && currentHour < 10) greetingMessage = 'Selamat Pagi';
-      else if (currentHour >= 10 && currentHour < 15) greetingMessage = 'Selamat Siang';
-      else if (currentHour >= 15 && currentHour < 18) greetingMessage = 'Selamat Sore';
-      else greetingMessage = 'Selamat Malam';
-      setGreeting(greetingMessage);
-    };
+  useEffect(() => {
+    if (!user.id) return;
 
     const fetchUserData = async () => {
-      if (!user.id) return;
-
       try {
-        const response = await fetch(`/api/user/${user.id}`, {
+        const response = await fetch(`/api/users/${user.id}`, {
           timeout: 10000
         });
 
@@ -121,10 +86,56 @@ const Profile = ({ session }) => {
       }
     };
 
-    validateToken();
-    updateGreeting();
     fetchUserData();
-  }, [user.id, router]);
+  }, [user.id]);
+
+  const handleEditClick = () => {
+    setIsEditing(true);
+    setEditData({...formData});
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setEditData({...formData});
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSaveChanges = async () => {
+    setIsSaving(true);
+    try {
+      const response = await fetch(`/api/users/${user.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fullName: editData.fullName,
+          phoneNumber: editData.phoneNumber,
+          email: editData.email,
+          alamat: editData.alamat,
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to update profile');
+
+      setFormData(prev => ({
+        ...prev,
+        ...editData
+      }));
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error saving profile:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const onLogout = async (e) => {
     e.preventDefault();
@@ -173,17 +184,37 @@ const Profile = ({ session }) => {
         };
     }
   };
-  const handleEditClick = () => {
-    router.push("/cruds/edit");
+
+  const renderEditableField = (label, icon, name, value, type = 'text') => {
+    const Icon = icon;
+    return (
+      <div className="flex items-center space-x-3">
+        <Icon className="w-5 h-5 text-gray-400" />
+        <div className="flex-1">
+          <p className="text-sm text-gray-500">{label}</p>
+          {isEditing ? (
+            <input
+              type={type}
+              name={name}
+              value={editData[name]}
+              onChange={handleInputChange}
+              className="w-full p-1 border rounded text-gray-800 focus:ring-2 focus:ring-blue-500"
+            />
+          ) : (
+            <p className="text-gray-800">{value || 'Belum diisi'}</p>
+          )}
+        </div>
+      </div>
+    );
   };
+
   const { Icon, color, bgColor } = getBadgeContent(formData.role);
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4">
-        {/* Header Section */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-8">
             <div className="flex items-center space-x-4">
               <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center">
                 <UserCircle className="w-10 h-10 text-white" />
@@ -195,165 +226,162 @@ const Profile = ({ session }) => {
                 <p className="text-gray-600">{greeting}, {formData.username}</p>
               </div>
             </div>
-            {/* <button
-              onClick={handleEditClick}
-              className="flex items-center space-x-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
-            >
-              <Settings className="w-4 h-4" />
-              <span>Edit Profile</span>
-            </button> */}
-            <button
-              onClick={onLogout}
-              className="flex items-center space-x-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors"
-            >
-              <LogOut className="w-4 h-4" />
-              <span>Log out</span>
-            </button>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Left Column - Photo and Status */}
-          <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <div className="flex flex-col items-center">
-                <div className="relative">
-                  <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center">
-                    <Camera className="w-12 h-12 text-gray-400" />
-                  </div>
-                  <button
-                    className="absolute bottom-0 right-0 bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full shadow-lg transition-colors"
-                    aria-label="Update profile picture"
-                  >
-                    <Camera className="w-4 h-4" />
-                  </button>
-                </div>
-                <h2 className="mt-4 text-xl font-semibold text-gray-800">
-                  {formData.username}
-                </h2>
-                <p className="text-gray-600">{formData.email}</p>
-                <div className="mt-4 flex items-center space-x-2">
-                  <div className={`p-2 rounded-full ${bgColor}`}>
-                    <Icon className={`w-4 h-4 ${color}`} />
-                  </div>
-                  <span className="text-sm text-gray-600">
-                    Anda adalah {formData.role || 'Pengguna'}
-                  </span>
-                </div>
-              </div>
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => router.push('/artist/dashboard')}
+                className="flex items-center space-x-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span>Back to Artist Dashboard</span>
+              </button>
+              <button
+                onClick={onLogout}
+                className="flex items-center space-x-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+                <span>Log out</span>
+              </button>
             </div>
           </div>
 
-          {/* Right Column - User Information */}
-          <div className="md:col-span-2">
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-semibold text-gray-800">
-                  Informasi Pribadi
-                </h2>
-                {/* New Quick Edit Button */}
-                <button
-                  onClick={handleEditClick}
-                  className="flex items-center space-x-1 text-blue-500 hover:text-blue-600 transition-colors"
-                >
-                  <Edit2 className="w-4 h-4" />
-                  <span className="text-sm">Edit</span>
-                </button>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="space-y-6">
+              <div className="bg-white rounded-lg shadow-lg p-6">
+                <div className="flex flex-col items-center">
+                  <div className="relative">
+                    <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center">
+                      <Camera className="w-12 h-12 text-gray-400" />
+                    </div>
+                    <button
+                      className="absolute bottom-0 right-0 bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full shadow-lg transition-colors"
+                      aria-label="Update profile picture"
+                    >
+                      <Camera className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <h2 className="mt-4 text-xl font-semibold text-gray-800">
+                    {formData.username}
+                  </h2>
+                  <p className="text-gray-600">{formData.email}</p>
+                  <div className="mt-4 flex items-center space-x-2">
+                    <div className={`p-2 rounded-full ${bgColor}`}>
+                      <Icon className={`w-4 h-4 ${color}`} />
+                    </div>
+                    <span className="text-sm text-gray-600">
+                      Anda adalah {formData.role || 'Pengguna'}
+                    </span>
+                  </div>
+                </div>
               </div>
+            </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-3">
-                    <User className="w-5 h-5 text-gray-400" />
-                    <div>
-                      <p className="text-sm text-gray-500">Username</p>
-                      <p className="text-gray-800">{formData.username}</p>
+            <div className="md:col-span-2">
+              <div className="bg-white rounded-lg shadow-lg p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-xl font-semibold text-gray-800">
+                    Informasi Pribadi
+                  </h2>
+                  {isEditing ? (
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={handleSaveChanges}
+                        disabled={isSaving}
+                        className="flex items-center space-x-1 text-green-500 hover:text-green-600 transition-colors"
+                      >
+                        <Check className="w-4 h-4" />
+                        <span className="text-sm">
+                          {isSaving ? 'Saving...' : 'Save'}
+                        </span>
+                      </button>
+                      <button
+                        onClick={handleCancelEdit}
+                        disabled={isSaving}
+                        className="flex items-center space-x-1 text-red-500 hover:text-red-600 transition-colors"
+                      >
+                        <X className="w-4 h-4" />
+                        <span className="text-sm">Cancel</span>
+                      </button>
                     </div>
+                  ) : (
+                    <button
+                      onClick={handleEditClick}
+                      className="flex items-center space-x-1 text-blue-500 hover:text-blue-600 transition-colors"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                      <span className="text-sm">Edit</span>
+                    </button>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                  <div className="flex items-center space-x-3">
+                      <User className="w-5 h-5 text-gray-400" />
+                      <div>
+                        <p className="text-sm text-gray-500">Username</p>
+                        <p className="text-gray-800">{formData.fullName}</p>
+                      </div>
+                    </div>
+                    {renderEditableField('Nomor Telepon', Phone, 'phoneNumber', formData.phoneNumber)}
+                    {renderEditableField('Email', Mail, 'email', formData.email, 'email')}
                   </div>
 
-                  <div className="flex items-center space-x-3">
-                    <Phone className="w-5 h-5 text-gray-400" />
-                    <div>
-                      <p className="text-sm text-gray-500">Nomor Telepon</p>
-                      <p className="text-gray-800">
-                        {formData.phoneNumber || 'Belum diisi'}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-3">
-                    <Mail className="w-5 h-5 text-gray-400" />
-                    <div>
-                      <p className="text-sm text-gray-500">Email</p>
-                      <p className="text-gray-800">{formData.email}</p>
+                  <div className="space-y-4">
+                    {renderEditableField('Alamat', MapPin, 'alamat', formData.alamat)}
+                    <div className="flex items-center space-x-3">
+                      <Calendar className="w-5 h-5 text-gray-400" />
+                      <div>
+                        <p className="text-sm text-gray-500">Tanggal Daftar</p>
+                        <p className="text-gray-800">{formData.registrationDate}</p>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-3">
-                    <MapPin className="w-5 h-5 text-gray-400" />
-                    <div>
-                      <p className="text-sm text-gray-500">Alamat</p>
-                      <p className="text-gray-800">
-                        {formData.alamat || 'Belum diisi'}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-3">
-                    <Calendar className="w-5 h-5 text-gray-400" />
-                    <div>
-                      <p className="text-sm text-gray-500">Tanggal Daftar</p>
-                      <p className="text-gray-800">{formData.registrationDate}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-8">
-                <h2 className="text-xl font-semibold text-gray-800 mb-6">
-                  Informasi Transaksi
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="bg-blue-50 rounded-lg p-4">
-                    <div className="flex items-center space-x-3">
-                      <ShoppingBag className="w-6 h-6 text-blue-500" />
-                      <div>
-                        <p className="text-sm text-gray-500">
-                          Total Transaksi (Count)
-                        </p>
-                        <p className="text-lg font-semibold text-gray-800">
-                          {formData.transactionStatus}
-                        </p>
+                <div className="mt-8">
+                  <h2 className="text-xl font-semibold text-gray-800 mb-6">
+                    Informasi Transaksi
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="bg-blue-50 rounded-lg p-4">
+                      <div className="flex items-center space-x-3">
+                        <ShoppingBag className="w-6 h-6 text-blue-500" />
+                        <div>
+                          <p className="text-sm text-gray-500">
+                            Total Transaksi (Count)
+                          </p>
+                          <p className="text-lg font-semibold text-gray-800">
+                            {formData.transactionStatus}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="bg-green-50 rounded-lg p-4">
-                    <div className="flex items-center space-x-3">
-                      <CreditCard className="w-6 h-6 text-green-500" />
-                      <div>
-                        <p className="text-sm text-gray-500">
-                          Nilai Total Transaksi (Rp)
-                        </p>
-                        <p className="text-lg font-semibold text-gray-800">
-                          Rp {parseInt(formData.totalNominalTransaction).toLocaleString('id-ID')}
-                        </p>
+                    <div className="bg-green-50 rounded-lg p-4">
+                      <div className="flex items-center space-x-3">
+                        <CreditCard className="w-6 h-6 text-green-500" />
+                        <div>
+                          <p className="text-sm text-gray-500">
+                            Nilai Total Transaksi (Rp)
+                          </p>
+                          <p className="text-lg font-semibold text-gray-800">
+                            Rp {parseInt(formData.totalNominalTransaction).toLocaleString('id-ID')}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="bg-purple-50 rounded-lg p-4">
-                    <div className="flex items-center space-x-3">
-                      <TrendingUp className="w-6 h-6 text-purple-500" />
-                      <div>
-                        <p className="text-sm text-gray-500">
-                          Transaksi Terbesar (Rp)
-                        </p>
-                        <p className="text-lg font-semibold text-gray-800">
-                          Rp {parseInt(formData.totalTransaction).toLocaleString('id-ID')}
-                        </p>
+                    <div className="bg-purple-50 rounded-lg p-4">
+                      <div className="flex items-center space-x-3">
+                        <TrendingUp className="w-6 h-6 text-purple-500" />
+                        <div>
+                          <p className="text-sm text-gray-500">
+                            Transaksi Terbesar (Rp)
+                          </p>
+                          <p className="text-lg font-semibold text-gray-800">
+                            Rp {parseInt(formData.totalTransaction).toLocaleString('id-ID')}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
