@@ -37,9 +37,9 @@ const Profile = ({ session }) => {
     alamat: user.alamat || '',
     fullName: user.fullName || '',
     registrationDate: user.tgl_register || '',
-    transactionStatus: '0',
-    totalNominalTransaction: '0',
-    totalTransaction: '0',
+    transactionStatus: user.totalTransactions || '0',
+    totalNominalTransaction: user.totalTransactionValue ||'0',
+    totalTransaction: user.largestTransaction ||'0',
     role: user.role || 'member'
   });
   const [editData, setEditData] = useState({...formData});
@@ -74,11 +74,11 @@ const Profile = ({ session }) => {
             registrationDate: data.registrationDate ?
               new Date(data.registrationDate).toLocaleDateString('id-ID') :
               'Tunggu data',
-            transactionStatus: data.transactionStatus || prev.transactionStatus,
-            totalNominalTransaction: data.totalNominalTransaction || prev.totalNominalTransaction,
-            totalTransaction: data.totalTransaction || prev.totalTransaction,
-            phoneNumber: data.phoneNumber || prev.phoneNumber,
-            role: data.role || prev.role
+              transactionStatus: data.stats?.totalTransactions?.toString() || '0',
+              totalNominalTransaction: data.stats?.totalTransactionValue || '0',
+              totalTransaction: data.stats?.largestTransaction || '0',
+              phoneNumber: data.phoneNumber || prev.phoneNumber,
+              role: data.role || prev.role,
           }));
         }
       } catch (error) {

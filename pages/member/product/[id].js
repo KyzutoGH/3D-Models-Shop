@@ -45,32 +45,28 @@ const ProductDetailPage = ({ session }) => {
 
     updateGreeting();
 
-    if (id) {
-      // Mock product data - replace with actual API call
-      setProduct({
-        id,
-        name: '3D Model Character Anime',
-        price: 150000,
-        description: 'Model 3D karakter anime berkualitas tinggi dengan detail yang sempurna. Cocok untuk game, animasi, atau visualisasi.',
-        image: 'product-image.jpg',
-        format: ['FBX', 'OBJ', 'GLB'],
-        polygon_count: '10,000',
-        textures: 'PBR Textures Included',
-        rigged: 'Full Body Rigging',
-        rating: 4.8,
-        reviews: 124,
-        sold: 350,
-        specifications: {
-          'Software Compatibility': 'Blender, Maya, 3ds Max',
-          'UV Mapping': 'Yes, properly unwrapped',
-          'Animation Ready': 'Yes',
-          'Texture Resolution': '4K',
-          'File Size': '250 MB'
+    const fetchProduct = async () => {
+      if (id) {
+        try {
+          setLoading(true);
+          const response = await fetch(`/api/products/${id}`);
+
+          if (!response.ok) {
+            throw new Error('Failed to fetch product');
+          }
+
+          const productData = await response.json();
+          setProduct(productData);
+        } catch (error) {
+          console.error('Error fetching product:', error);
+          // Optionally handle error state here
+        } finally {
+          setLoading(false);
         }
-      });
-      setProduct(fetchedProduct);
-      setLoading(false);
-    }
+      }
+    };
+
+    fetchProduct();
   }, [id]);
 
   const handleLogout = async () => {
@@ -139,7 +135,7 @@ const ProductDetailPage = ({ session }) => {
               <div className="flex items-center space-x-4">
                 <div className="w-10 h-10 relative">
                   <Image
-                    src="/Logo3DShopBL.png"
+                    src="/IconShopBlk.png"
                     alt="PunyaBapak Logo"
                     layout="fill"
                     objectFit="contain"
@@ -191,7 +187,7 @@ const ProductDetailPage = ({ session }) => {
                     <span>Masuk</span>
                   </button>
                 )}
-                
+
                 {/* Mobile Menu Button */}
                 <button
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -281,13 +277,15 @@ const ProductDetailPage = ({ session }) => {
                   <h1 className="text-2xl font-bold text-gray-800 mb-2">{product.name}</h1>
                   <div className="flex items-center space-x-4 text-sm text-gray-600">
                     <div className="flex items-center">
-                      <span className="text-yellow-400">★</span>
-                      <span className="ml-1">{product.rating}</span>
+                      <span className="text-yellow-400">★</span><span className="ml-1">
+                        {new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(product.average_rating)}
+                      </span>
+
                     </div>
                     <span>|</span>
-                    <span>{product.reviews} Reviews</span>
+                    <span>{product.total_reviews} Reviews</span>
                     <span>|</span>
-                    <span>{product.sold} Terjual</span>
+                    <span>{product.units_sold} Terjual</span>
                   </div>
                 </div>
 
@@ -298,7 +296,11 @@ const ProductDetailPage = ({ session }) => {
                 <div className="space-y-4">
                   <div className="flex items-center">
                     <span className="text-gray-600 w-32">Format File:</span>
-                    <span className="text-gray-800">{product.format.join(', ')}</span>
+                    <span className="text-gray-800">
+                      {Array.isArray(product.format)
+                        ? product.format.join(', ')
+                        : product.format || 'N/A'}
+                    </span>
                   </div>
                   <div className="flex items-center">
                     <span className="text-gray-600 w-32">Polygon Count:</span>
@@ -353,12 +355,16 @@ const ProductDetailPage = ({ session }) => {
 
                 <h2 className="text-xl font-bold text-gray-800 mb-4">Specifications</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {Object.entries(product.specifications).map(([key, value]) => (
-                    <div key={key} className="flex border-b py-2">
-                      <span className="text-gray-600 w-1/2">{key}:</span>
-                      <span className="text-gray-800 w-1/2">{value}</span>
-                    </div>
-                  ))}
+                  {product.specifications && typeof product.specifications === 'object' ? (
+                    Object.entries(product.specifications).map(([key, value]) => (
+                      <div key={key} className="flex border-b py-2">
+                        <span className="text-gray-600 w-1/2">{key}:</span>
+                        <span className="text-gray-800 w-1/2">{value}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="col-span-2 text-gray-600">No specifications available</div>
+                  )}
                 </div>
 
                 {/* Product Features */}
@@ -390,13 +396,13 @@ const ProductDetailPage = ({ session }) => {
                 <div className="mt-8">
                   <h2 className="text-xl font-bold text-gray-800 mb-4">Customer Reviews</h2>
                   <div className="flex items-center space-x-4 mb-6">
-                    <div className="text-4xl font-bold text-gray-800">{product.rating}</div>
+                    <div className="text-4xl font-bold text-gray-800">{new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(product.average_rating)}</div>
                     <div>
                       <div className="flex text-yellow-400 mb-1">
-                        {'★'.repeat(Math.floor(product.rating))}
-                        {'☆'.repeat(5 - Math.floor(product.rating))}
+                        {'★'.repeat(Math.floor(product.average_rating))}
+                        {'☆'.repeat(5 - Math.floor(product.average_rating))}
                       </div>
-                      <p className="text-sm text-gray-600">{product.reviews} total reviews</p>
+                      <p className="text-sm text-gray-600">{product.total_reviews} total reviews</p>
                     </div>
                   </div>
                 </div>
