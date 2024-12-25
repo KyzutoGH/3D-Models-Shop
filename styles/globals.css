@@ -27,4 +27,8 @@ a {
     color: white;
     background: black;
   }
+  input{
+    background-color: white;
+    color: black;
+  }
 }

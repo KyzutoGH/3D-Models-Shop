@@ -76,16 +76,16 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-slate-900">
+      <div className="bg-slate-800 p-8 rounded-lg shadow-md w-full max-w-md">
         <div className="flex items-center justify-center mb-6">
-          <div className="bg-white w-12 h-12 flex items-center justify-center text-white rounded">
+          <div className="bg-slate-800 w-12 h-12 flex items-center justify-center text-white rounded">
             <Image src="/IconShopBlk.png" width={580} height={430} alt="Logo" />
           </div>
-          <h1 className="text-2xl text-gray-600 ml-2 font-semibold">PunyaBapak</h1>
+          <h1 className="text-2xl text-yellow-700 ml-2 font-semibold">PunyaBapak</h1>
         </div>
 
-        <h2 className="text-center text-gray-600 mb-6">Toko Terbaik Dunia Akhirat</h2>
+        <h2 className="text-center text-yellow-700 mb-6">Toko Terbaik Dunia Akhirat</h2>
 
         {error && (
           <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
@@ -95,7 +95,7 @@ const LoginPage = () => {
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
-            <label htmlFor="emailOrUsername" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="emailOrUsername" className="block text-sm font-medium text-yellow-700 mb-1">
               Email atau Username
             </label>
             <input
@@ -111,7 +111,7 @@ const LoginPage = () => {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="password" className="block text-sm font-medium text-yellow-700 mb-1">
               Password
             </label>
             <input
@@ -161,10 +161,10 @@ const LoginPage = () => {
 
         <div className="relative my-6">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300"></div>
+            <div className="w-full border-t border-orange-300"></div>
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white text-gray-500">Atau</span>
+            <span className="px-2 bg-orange-300 text-black">Atau</span>
           </div>
         </div>
 

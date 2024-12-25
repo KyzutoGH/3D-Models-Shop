@@ -198,10 +198,10 @@ const Profile = ({ session }) => {
               name={name}
               value={editData[name]}
               onChange={handleInputChange}
-              className="w-full p-1 border rounded text-gray-800 focus:ring-2 focus:ring-blue-500"
+              className="w-full p-1 border rounded text-gray-600 focus:ring-2 focus:ring-blue-500"
             />
           ) : (
-            <p className="text-gray-800">{value || 'Belum diisi'}</p>
+            <p className="text-gray-500">{value || 'Belum diisi'}</p>
           )}
         </div>
       </div>

@@ -87,10 +87,10 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-slate-900">
+      <div className="bg-slate-800 p-8 rounded-lg shadow-md w-full max-w-md">
         <div className="flex items-center justify-center mb-6">
-          <div className="bg-white w-12 h-12 flex items-center justify-center text-white rounded">
+          <div className="bg-slate-800 w-12 h-12 flex items-center justify-center text-white rounded">
             <Image
               src="/IconShopBlk.png"
               width={580}
@@ -98,15 +98,15 @@ const RegisterPage = () => {
               alt="Picture of the author"
             />
           </div>
-          <h1 className="text-2xl text-gray-600 ml-2 font-semibold">PunyaBapak</h1>
+          <h1 className="text-2xl text-yellow-700 ml-2 font-semibold">PunyaBapak</h1>
         </div>
 
-        <h2 className="text-center text-gray-600 mb-6">Toko Terbaik Dunia Akhirat</h2>
+        <h2 className="text-center text-yellow-700 mb-6">Toko Terbaik Dunia Akhirat</h2>
 
         <form onSubmit={handleRegister} className="space-y-4">
           {/* Nama */}
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="name" className="block text-sm font-medium text-yellow-700 mb-1">
               Nama
             </label>
             <input
@@ -122,7 +122,7 @@ const RegisterPage = () => {
 
           {/* Username */}
           <div>
-            <label htmlFor="userName" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="userName" className="block text-sm font-medium text-yellow-700 mb-1">
               UserName
             </label>
             <input
@@ -140,7 +140,7 @@ const RegisterPage = () => {
 
           {/* Email */}
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="email" className="block text-sm font-medium text-yellow-700 mb-1">
               Email
             </label>
             <input
@@ -157,7 +157,7 @@ const RegisterPage = () => {
 
           {/* Password */}
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="password" className="block text-sm font-medium text-yellow-700 mb-1">
               Password
             </label>
             <input
@@ -174,7 +174,7 @@ const RegisterPage = () => {
 
           {/* Confirm Password */}
           <div>
-            <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="confirm-password" className="block text-sm font-medium text-yellow-700 mb-1">
               Konfirmasi Password
             </label>
             <input
@@ -191,7 +191,7 @@ const RegisterPage = () => {
 
           {/* Nomor Telepon */}
           <div>
-            <label htmlFor="nomorTelepon" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="nomorTelepon" className="block text-sm font-medium text-yellow-700 mb-1">
               Nomor Telepon
             </label>
             <input
@@ -215,7 +215,7 @@ const RegisterPage = () => {
               Registrasi
             </button>
 
-            <div className="flex justify-center text-sm text-gray-600">
+            <div className="flex justify-center text-sm text-yellow-600">
               Sudah punya akun?
               <Link href="/login" className="ml-1 text-blue-600 hover:underline">
                 &nbsp;Login
@@ -226,10 +226,10 @@ const RegisterPage = () => {
 
         <div className="relative my-6">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300"></div>
+            <div className="w-full border-t border-orange-300"></div>
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white text-gray-500">Atau</span>
+            <span className="px-2 bg-orange-300 text-black">Atau</span>
           </div>
         </div>
 
