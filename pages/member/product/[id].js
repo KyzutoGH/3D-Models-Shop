@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Image from 'next/image';
 import { getSession, signOut } from 'next-auth/react';
-import { Search, User, Menu, ShoppingCart, Plus, Minus, LogOut, Share2, Heart, Shield, Package, FileCheck, ArrowLeft } from 'lucide-react';
+import { Search, User, Menu, Eye, Plus, Minus, LogOut, Share2, Heart, Shield, Package, FileCheck, ArrowLeft, ShoppingCart } from 'lucide-react';
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
@@ -121,7 +121,7 @@ const ProductDetailPage = ({ session }) => {
   return (
     <>
       <Head>
-        <title>{product.name} | PunyaBapak</title>
+        <title>{product.product_name} | PunyaBapak</title>
         <meta name="description" content={product.description} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
@@ -255,7 +255,7 @@ const ProductDetailPage = ({ session }) => {
                 <div className="relative aspect-square rounded-lg overflow-hidden">
                   <Image
                     src={`/img/${product.image}`}
-                    alt={product.name}
+                    alt={product.product_name}
                     layout="fill"
                     objectFit="cover"
                     className="rounded-lg"
@@ -274,7 +274,7 @@ const ProductDetailPage = ({ session }) => {
               {/* Product Info */}
               <div className="space-y-6">
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-800 mb-2">{product.name}</h1>
+                  <h1 className="text-2xl font-bold text-gray-800 mb-2">{product.product_name}</h1>
                   <div className="flex items-center space-x-4 text-sm text-gray-600">
                     <div className="flex items-center">
                       <span className="text-yellow-400">★</span><span className="ml-1">
@@ -337,11 +337,12 @@ const ProductDetailPage = ({ session }) => {
 
                 <div className="flex space-x-4">
                   <button className="flex-1 bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center space-x-2">
-                    <ShoppingCart className="w-5 h-5" />
-                    <span>Add to Cart</span>
+                    <Eye className="w-5 h-5" />
+                    <span>Preview</span>
                   </button>
-                  <button className="flex-1 bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition-colors">
-                    Buy Now
+                  <button className="flex-1 bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center space-x-2">
+                  <ShoppingCart className="w-5 h-5" />
+                    <span>Buy Now</span>
                   </button>
                 </div>
               </div>

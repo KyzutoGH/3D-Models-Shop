@@ -1,3 +1,4 @@
+// pages/api/users/[id].js
 import db from '../../../lib/db';
 
 const queryDatabase = async (query, values) => {
@@ -23,12 +24,12 @@ export default async function handler(req, res) {
           SELECT 
             u.id AS user_id, 
             u.name AS fullName, 
-            u.userName AS userName, 
+            u.userName, 
             u.email, 
             u.alamat, 
             u.nomorTelepon AS phoneNumber, 
             u.role, 
-            u.tgl_register AS registrationDate,
+            DATE_FORMAT(u.tgl_register, '%Y-%m-%d') AS registrationDate,
             COUNT(t.id) AS totalTransactions,
             COALESCE(SUM(t.total_amount), 0) AS totalTransactionValue,
             COALESCE(MAX(t.total_amount), 0) AS largestTransaction
@@ -54,9 +55,7 @@ export default async function handler(req, res) {
           alamat: userRow.alamat || 'Belum diisi',
           phoneNumber: userRow.phoneNumber || 'Belum diisi',
           role: userRow.role || 'member',
-          registrationDate: userRow.registrationDate
-            ? new Date(userRow.registrationDate).toLocaleDateString('id-ID')
-            : 'N/A',
+          registrationDate: userRow.registrationDate || null,
           stats: {
             totalTransactions: userRow.totalTransactions || 0,
             totalTransactionValue: userRow.totalTransactionValue || 0,
@@ -80,7 +79,7 @@ export default async function handler(req, res) {
             userName = ?,
             nomorTelepon = ?,
             alamat = ?,
-            updated_at = NOW()
+            tgl_update = NOW()
           WHERE id = ?
         `;
         

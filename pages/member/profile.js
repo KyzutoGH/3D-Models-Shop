@@ -36,10 +36,10 @@ const Profile = ({ session }) => {
     email: user.email || '',
     alamat: user.alamat || '',
     fullName: user.fullName || '',
-    registrationDate: user.tgl_register || '',
+    registrationDate: '',
     transactionStatus: user.totalTransactions || '0',
-    totalNominalTransaction: user.totalTransactionValue ||'0',
-    totalTransaction: user.largestTransaction ||'0',
+    totalNominalTransaction: user.totalTransactionValue || '0',
+    totalTransaction: user.largestTransaction || '0',
     role: user.role || 'member'
   });
   const [editData, setEditData] = useState({...formData});
@@ -67,18 +67,34 @@ const Profile = ({ session }) => {
 
         const data = await response.json();
         if (data) {
+          // Format the date using a safe date parsing method
+          const registrationDate = data.registrationDate ? 
+            new Date(data.registrationDate.replace(/-/g, '/')).toLocaleDateString('id-ID', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            }) : 'Belum tersedia';
+
           setFormData(prev => ({
             ...prev,
             fullName: data.fullName || prev.fullName,
+            username: data.userName || prev.username,
             alamat: data.alamat || prev.alamat,
-            registrationDate: data.registrationDate ?
-              new Date(data.registrationDate).toLocaleDateString('id-ID') :
-              'Tunggu data',
-              transactionStatus: data.stats?.totalTransactions?.toString() || '0',
-              totalNominalTransaction: data.stats?.totalTransactionValue || '0',
-              totalTransaction: data.stats?.largestTransaction || '0',
-              phoneNumber: data.phoneNumber || prev.phoneNumber,
-              role: data.role || prev.role,
+            registrationDate,
+            transactionStatus: data.stats?.totalTransactions?.toString() || '0',
+            totalNominalTransaction: data.stats?.totalTransactionValue || '0',
+            totalTransaction: data.stats?.largestTransaction || '0',
+            phoneNumber: data.phoneNumber || prev.phoneNumber,
+            role: data.role || prev.role,
+          }));
+          
+          // Also update the edit data
+          setEditData(prev => ({
+            ...prev,
+            fullName: data.fullName || prev.fullName,
+            username: data.userName || prev.username,
+            alamat: data.alamat || prev.alamat,
+            phoneNumber: data.phoneNumber || prev.phoneNumber,
           }));
         }
       } catch (error) {
@@ -116,19 +132,22 @@ const Profile = ({ session }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          fullName: editData.fullName,
+          userName: editData.username,
           phoneNumber: editData.phoneNumber,
-          email: editData.email,
           alamat: editData.alamat,
         }),
       });
 
       if (!response.ok) throw new Error('Failed to update profile');
 
+      // Update both formData and editData with the new values
       setFormData(prev => ({
         ...prev,
-        ...editData
+        username: editData.username,
+        phoneNumber: editData.phoneNumber,
+        alamat: editData.alamat,
       }));
+      
       setIsEditing(false);
     } catch (error) {
       console.error('Error saving profile:', error);
@@ -315,17 +334,10 @@ const Profile = ({ session }) => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
-                  <div className="flex items-center space-x-3">
-                      <User className="w-5 h-5 text-gray-400" />
-                      <div>
-                        <p className="text-sm text-gray-500">Username</p>
-                        <p className="text-gray-800">{formData.fullName}</p>
-                      </div>
-                    </div>
+                    {renderEditableField('Username', User, 'username', formData.username)}
                     {renderEditableField('Nomor Telepon', Phone, 'phoneNumber', formData.phoneNumber)}
                     {renderEditableField('Email', Mail, 'email', formData.email, 'email')}
                   </div>
-
                   <div className="space-y-4">
                     {renderEditableField('Alamat', MapPin, 'alamat', formData.alamat)}
                     <div className="flex items-center space-x-3">
