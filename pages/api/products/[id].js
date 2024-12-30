@@ -1,16 +1,20 @@
+// pages/api/products/[id].js
 import db from '../../../lib/db';
+import { getSession } from 'next-auth/react';
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
     try {
       const { id } = req.query;
+      const session = await getSession({ req });
+      const userId = session?.user?.id;
 
       // Validasi parameter ID
       if (!id || isNaN(id)) {
         return res.status(400).json({ error: 'Invalid Product ID' });
       }
 
-      // Query untuk mendapatkan detail produk
+      // Query untuk mendapatkan detail produk dan status pembelian
       const [products] = await db.execute(
         `
         SELECT 
@@ -18,6 +22,8 @@ export default async function handler(req, res) {
           p.name AS product_name, 
           p.price, 
           p.image, 
+          p.model_path,
+          p.preview_path,
           p.createdAt, 
           p.updatedAt, 
           p.description, 
@@ -30,7 +36,15 @@ export default async function handler(req, res) {
           AVG(r.rating) AS average_rating, 
           GROUP_CONCAT(r.comment SEPARATOR " | ") AS comments, 
           GROUP_CONCAT(u.name SEPARATOR ", ") AS reviewers, 
-          COALESCE(SUM(dt.quantity), 0) AS units_sold 
+          COALESCE(SUM(dt.quantity), 0) AS units_sold,
+          EXISTS (
+            SELECT 1 
+            FROM transaksi t 
+            JOIN detail_transaksi dt ON t.id = dt.transaksi_id 
+            WHERE t.user_id = ? 
+            AND dt.product_id = p.id 
+            AND t.status = 'completed'
+          ) as has_purchased
         FROM 
           product p 
         LEFT JOIN 
@@ -46,34 +60,40 @@ export default async function handler(req, res) {
         GROUP BY 
           p.id;
         `,
-        [id] // Bind parameter untuk ID produk
+        [userId || 0, id]
       );
 
-      // Jika produk tidak ditemukan
       if (products.length === 0) {
         return res.status(404).json({ error: 'Product not found' });
       }
 
       const product = products[0];
 
-      // Parsing kolom "format" jika berbentuk string JSON
+      // Transform paths to full URLs
+      if (product.image) {
+        product.image_url = `/img/${product.image}`;
+      }
+      if (product.model_path) {
+        product.model_url = `/models/${product.model_path}`;
+      }
+      if (product.preview_path) {
+        product.preview_url = `/preview/${product.preview_path}`;
+      }
+
       if (product.format && typeof product.format === 'string') {
         try {
           product.format = JSON.parse(product.format);
         } catch {
-          // Jika gagal parsing, gunakan fallback dengan split string
           product.format = product.format.split(',').map((f) => f.trim());
         }
       }
 
-      // Mengirimkan data produk
       res.status(200).json(product);
     } catch (error) {
       console.error('Database error:', error.message);
       res.status(500).json({ error: 'Failed to retrieve product details' });
     }
   } else {
-    // Method yang tidak diizinkan
     res.setHeader('Allow', ['GET']);
     res.status(405).json({ error: `Method ${req.method} Not Allowed` });
   }

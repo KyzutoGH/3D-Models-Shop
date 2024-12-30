@@ -196,4 +196,5 @@ const authOptions = {
   debug: process.env.NODE_ENV === "development"
 };
 
+export { authOptions }
 export default NextAuth(authOptions);

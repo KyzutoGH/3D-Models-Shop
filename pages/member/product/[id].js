@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Image from 'next/image';
-import { getSession, signOut } from 'next-auth/react';
-import { Search, User, Menu, Eye, Plus, Minus, LogOut, Share2, Heart, Shield, Package, FileCheck, ArrowLeft, ShoppingCart } from 'lucide-react';
+import { getSession } from 'next-auth/react';
+import { Search, User, Menu, Eye, Plus, Minus, LogOut, Share2, Heart, Shield, 
+         Package, FileCheck, ArrowLeft, ShoppingCart, Download } from 'lucide-react';
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
@@ -59,7 +60,6 @@ const ProductDetailPage = ({ session }) => {
           setProduct(productData);
         } catch (error) {
           console.error('Error fetching product:', error);
-          // Optionally handle error state here
         } finally {
           setLoading(false);
         }
@@ -96,6 +96,20 @@ const ProductDetailPage = ({ session }) => {
       const newValue = prev + increment;
       return newValue >= 1 ? newValue : 1;
     });
+  };
+
+  const handleCheckout = async () => {
+    // Your checkout logic here using Midtrans
+    router.push(`/transaksi/${id}?quantity=${quantity}`);
+  };
+
+  const handleDownload = async () => {
+    try {
+      window.location.href = `/api/download/${id}`;
+    } catch (error) {
+      console.error('Download error:', error);
+      alert('Failed to download file. Please try again.');
+    }
   };
 
   const formatPrice = (price) => {
@@ -145,7 +159,7 @@ const ProductDetailPage = ({ session }) => {
                 <span className="text-xl font-bold text-gray-800">PunyaBapak</span>
               </div>
 
-              {/* Search Bar - Hidden on mobile */}
+              {/* Search Bar */}
               <div className="hidden md:flex flex-1 max-w-2xl mx-6">
                 <div className="relative w-full">
                   <input
@@ -277,10 +291,13 @@ const ProductDetailPage = ({ session }) => {
                   <h1 className="text-2xl font-bold text-gray-800 mb-2">{product.product_name}</h1>
                   <div className="flex items-center space-x-4 text-sm text-gray-600">
                     <div className="flex items-center">
-                      <span className="text-yellow-400">★</span><span className="ml-1">
-                        {new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(product.average_rating)}
+                      <span className="text-yellow-400">★</span>
+                      <span className="ml-1">
+                        {new Intl.NumberFormat('en-US', { 
+                          minimumFractionDigits: 1, 
+                          maximumFractionDigits: 1 
+                        }).format(product.average_rating)}
                       </span>
-
                     </div>
                     <span>|</span>
                     <span>{product.total_reviews} Reviews</span>
@@ -316,34 +333,61 @@ const ProductDetailPage = ({ session }) => {
                   </div>
                 </div>
 
-                <div className="flex items-center space-x-4">
-                  <span className="text-gray-600">Quantity:</span>
-                  <div className="flex items-center space-x-2">
-                    <button
-                      onClick={() => handleQuantityChange(-1)}
-                      className="p-1 rounded-full border hover:bg-gray-100"
-                    >
-                      <Minus className="w-4 h-4" />
-                    </button>
-                    <span className="w-12 text-center">{quantity}</span>
-                    <button
-                      onClick={() => handleQuantityChange(1)}
-                      className="p-1 rounded-full border hover:bg-gray-100"
-                    >
-                      <Plus className="w-4 h-4" />
-                    </button>
+                {!product.has_purchased && (
+                  <div className="flex items-center space-x-4">
+                    <span className="text-gray-600">Quantity:</span>
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={() => handleQuantityChange(-1)}
+                        className="p-1 rounded-full border hover:bg-gray-100"
+                      >
+                        <Minus className="w-4 h-4" />
+                      </button>
+                      <span className="w-12 text-center">{quantity}</span>
+                      <button
+                        onClick={() => handleQuantityChange(1)}
+                        className="p-1 rounded-full border hover:bg-gray-100"
+                      >
+                        <Plus className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
-                </div>
+                )}
 
                 <div className="flex space-x-4">
-                  <button className="flex-1 bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center space-x-2">
-                    <Eye className="w-5 h-5" />
-                    <span>Preview</span>
-                  </button>
-                  <button className="flex-1 bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center space-x-2">
-                  <ShoppingCart className="w-5 h-5" />
-                    <span>Buy Now</span>
-                  </button>
+                  {product.has_purchased ? (
+                    <>
+                      <button 
+                        onClick={handleDownload}
+                        className="flex-1 bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center space-x-2"
+                      >
+                        <Download className="w-5 h-5" />
+                        <span>Download File</span>
+                      </button>
+                      <button 
+                        onClick={() => router.push(`/preview/${id}`)}
+                        className="flex-1 bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center space-x-2"
+                      >
+                        <Eye className="w-5 h-5" />
+                        <span>Preview</span>
+                      </button></>
+                  ) : (
+                    <>
+                      <button 
+                        className="flex-1 bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center space-x-2"
+                      >
+                        <Eye className="w-5 h-5" />
+                        <span>Preview</span>
+                      </button>
+                      <button 
+                        onClick={handleCheckout}
+                        className="flex-1 bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center space-x-2"
+                      >
+                        <ShoppingCart className="w-5 h-5" />
+                        <span>Buy Now</span>
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -397,7 +441,12 @@ const ProductDetailPage = ({ session }) => {
                 <div className="mt-8">
                   <h2 className="text-xl font-bold text-gray-800 mb-4">Customer Reviews</h2>
                   <div className="flex items-center space-x-4 mb-6">
-                    <div className="text-4xl font-bold text-gray-800">{new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(product.average_rating)}</div>
+                    <div className="text-4xl font-bold text-gray-800">
+                      {new Intl.NumberFormat('en-US', { 
+                        minimumFractionDigits: 1, 
+                        maximumFractionDigits: 1 
+                      }).format(product.average_rating)}
+                    </div>
                     <div>
                       <div className="flex text-yellow-400 mb-1">
                         {'★'.repeat(Math.floor(product.average_rating))}
