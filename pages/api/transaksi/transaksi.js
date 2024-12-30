@@ -94,7 +94,7 @@ export default async function handler(req, res) {
           username: session.user.userName
         },
         callbacks: {
-          finish: `${process.env.NEXT_PUBLIC_BASE_URL}/member/transaksi`,
+          finish: `${process.env.NEXT_PUBLIC_BASE_URL}/member/product/${productId}`,
           error: `${process.env.NEXT_PUBLIC_BASE_URL}/payment/${productId}`,
           pending: `${process.env.NEXT_PUBLIC_BASE_URL}/member/transaksi`
         }

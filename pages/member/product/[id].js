@@ -94,7 +94,7 @@ const ProductDetailPage = ({ session }) => {
   const handleQuantityChange = (increment) => {
     setQuantity(prev => {
       const newValue = prev + increment;
-      return newValue >= 1 ? newValue : 1;
+      return newValue;
     });
   };
 

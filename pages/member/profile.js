@@ -93,6 +93,7 @@ const Profile = ({ session }) => {
             ...prev,
             fullName: data.fullName || prev.fullName,
             username: data.userName || prev.username,
+            email:data.email || prev.email,
             alamat: data.alamat || prev.alamat,
             phoneNumber: data.phoneNumber || prev.phoneNumber,
           }));
@@ -145,6 +146,7 @@ const Profile = ({ session }) => {
         ...prev,
         username: editData.username,
         phoneNumber: editData.phoneNumber,
+        email: editData.email,
         alamat: editData.alamat,
       }));
       
@@ -336,7 +338,7 @@ const Profile = ({ session }) => {
                   <div className="space-y-4">
                     {renderEditableField('Username', User, 'username', formData.username)}
                     {renderEditableField('Nomor Telepon', Phone, 'phoneNumber', formData.phoneNumber)}
-                    {renderEditableField('Email', Mail, 'email', formData.email, 'email')}
+                    {renderEditableField('Email', Mail, 'email',  'email', formData.email)}
                   </div>
                   <div className="space-y-4">
                     {renderEditableField('Alamat', MapPin, 'alamat', formData.alamat)}

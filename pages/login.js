@@ -24,10 +24,10 @@ const LoginPage = () => {
         router.push("/admin/dashboard");
         break;
       case "artist":
-        router.push("/artist/profile");
+        router.push("/artist/dashboard");
         break;
       default:
-        router.push("/member/profile");
+        router.push("/member/");
     }
   };
 
