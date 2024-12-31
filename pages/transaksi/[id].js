@@ -1,5 +1,5 @@
 // pages/payment/[id].js
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/react';
 import Head from 'next/head';
@@ -12,55 +12,73 @@ const PaymentPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [orderDetails, setOrderDetails] = useState(null);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const hasAttemptedTransaction = useRef(false);
 
+  // Authentication check
   useEffect(() => {
-    // Redirect jika tidak ada session
     if (status === "unauthenticated") {
       router.push('/login');
     }
   }, [status, router]);
 
+  // Load Midtrans Script
   useEffect(() => {
-    // Load Midtrans Snap
-    const script = document.createElement('script');
-    script.src = process.env.NEXT_PUBLIC_MIDTRANS_SNAP_URL;
-    script.setAttribute('data-client-key', process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY);
-    document.body.appendChild(script);
+    if (typeof window !== 'undefined') {
+      const script = document.createElement('script');
+      script.src = process.env.NEXT_PUBLIC_MIDTRANS_SNAP_URL;
+      script.setAttribute('data-client-key', process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY);
+      script.async = true;
+      
+      script.onload = () => {
+        console.log('Midtrans script loaded successfully');
+      };
+      
+      script.onerror = () => {
+        console.error('Failed to load Midtrans script');
+        setError('Failed to initialize payment system');
+      };
 
-    return () => {
-      document.body.removeChild(script);
-    };
+      document.body.appendChild(script);
+
+      return () => {
+        document.body.removeChild(script);
+      };
+    }
   }, []);
 
+  // Handle Order Creation
   useEffect(() => {
     const createOrder = async () => {
-      if (id && quantity && session?.user && !isProcessing && !orderDetails) {
-        try {
-          setIsProcessing(true);
-          setLoading(true);
-          console.log('Creating order with:', { id, quantity });
+      if (!router.isReady || !id || !quantity || !session?.user || hasAttemptedTransaction.current) {
+        return;
+      }
 
-          const response = await fetch('/api/transaksi/transaksi', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              productId: id,
-              quantity: parseInt(quantity)
-            }),
-          });
+      try {
+        hasAttemptedTransaction.current = true;
+        setLoading(true);
+        
+        const response = await fetch('/api/transaksi/transaksi', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            productId: id,
+            quantity: parseInt(quantity),
+            timestamp: Date.now()
+          }),
+        });
 
-          if (!response.ok) {
-            throw new Error('Failed to create order');
-          }
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to create order');
+        }
 
-          const data = await response.json();
-          setOrderDetails(data);
-          console.log('Opening Snap payment with token:', data.snapToken);
+        const data = await response.json();
+        setOrderDetails(data);
 
-          // Open Snap payment page
+        // Ensure window.snap is available
+        if (typeof window.snap !== 'undefined') {
           window.snap.pay(data.snapToken, {
             onSuccess: function(result) {
               console.log('Payment success:', result);
@@ -73,26 +91,29 @@ const PaymentPage = () => {
             onError: function(result) {
               console.error('Payment failed:', result);
               setError('Payment failed. Please try again.');
+              hasAttemptedTransaction.current = false;
             },
             onClose: function() {
               console.log('Snap payment closed');
               router.push(`/product/${id}`);
             }
           });
-        } catch (error) {
-          console.error('Error creating order:', error);
-          setError('Failed to create order. Please try again.');
-          setIsProcessing(false);
-        } finally {
-          setLoading(false);
+        } else {
+          throw new Error('Payment system not initialized');
         }
+      } catch (error) {
+        console.error('Error creating order:', error);
+        setError(error.message || 'Failed to create order. Please try again.');
+        hasAttemptedTransaction.current = false;
+      } finally {
+        setLoading(false);
       }
     };
 
-    if (session && !orderDetails && !isProcessing) {
+    if (session && !orderDetails) {
       createOrder();
     }
-  }, [id, quantity, session, isProcessing, orderDetails, router]);
+  }, [router.isReady, id, quantity, session, router]);
 
   if (status === "loading" || loading) {
     return (
@@ -111,7 +132,11 @@ const PaymentPage = () => {
         <div className="text-center">
           <p className="text-red-500 mb-4">{error}</p>
           <button
-            onClick={() => router.push(`/product/${id}`)}
+            onClick={() => {
+              hasAttemptedTransaction.current = false;
+              setError(null);
+              router.push(`/product/${id}`);
+            }}
             className="flex items-center space-x-2 text-blue-500 hover:text-blue-600"
           >
             <ArrowLeft className="w-4 h-4" />

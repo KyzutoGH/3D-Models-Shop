@@ -1,4 +1,3 @@
-// middleware.js
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
@@ -8,24 +7,26 @@ export default withAuth(
     const token = req.nextauth.token;
 
     if (pathname.startsWith("/login") && token) {
-      const role = token.role;
-      let redirectUrl = "/member/profile";
-      
-      if (role === "admin") {
-        redirectUrl = "/admin/dashboard";
-      }
-      if (role === "artist") {
-        redirectUrl = "/artist/profile";
-      }
+      const redirectUrl = token.role === "admin" ? "/admin/dashboard" 
+                       : token.role === "artist" ? "/artist/dashboard"
+                       : "/member";
       
       return NextResponse.redirect(new URL(redirectUrl, req.url));
+    }
+
+    if (pathname.startsWith("/artist") && token?.role !== "artist") {
+      return NextResponse.redirect(new URL("/login", req.url));
+    }
+
+    if (pathname.startsWith("/admin") && token?.role !== "admin") {
+      return NextResponse.redirect(new URL("/login", req.url));
     }
 
     return NextResponse.next();
   },
   {
     callbacks: {
-      authorized: function({ req, token }) {
+      authorized: ({ req, token }) => {
         if (req.nextUrl.pathname.startsWith("/login")) {
           return true;
         }
@@ -36,5 +37,10 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ["/login", "/member/:path*", "/admin/:path*", "/artist/:path*"]
+  matcher: [
+    "/login",
+    "/member/:path*",
+    "/admin/:path*",
+    "/artist/:path*"
+  ]
 };

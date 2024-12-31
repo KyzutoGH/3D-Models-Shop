@@ -1,14 +1,11 @@
-import { GoogleOAuthProvider } from '@react-oauth/google';
-import { SessionProvider } from 'next-auth/react';  // Import SessionProvider
-
+// pages/_app.js
+import { SessionProvider } from 'next-auth/react';
 import '../styles/globals.css';
 
-function MyApp({ Component, pageProps }) {
+function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   return (
-    <SessionProvider session={pageProps.session}> {/* Wrap with SessionProvider */}
-      <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}>
-        <Component {...pageProps} />
-      </GoogleOAuthProvider>
+    <SessionProvider session={session}>
+      <Component {...pageProps} />
     </SessionProvider>
   );
 }

@@ -88,7 +88,7 @@ const ProductDetailPage = ({ session }) => {
   };
 
   const navigateToProfile = () => {
-    router.push('/profile');
+    router.push('/member/profile');
   };
 
   const handleQuantityChange = (increment) => {
