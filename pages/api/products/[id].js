@@ -9,34 +9,20 @@ export default async function handler(req, res) {
       const session = await getSession({ req });
       const userId = session?.user?.id;
 
-      // Validasi parameter ID
       if (!id || isNaN(id)) {
         return res.status(400).json({ error: 'Invalid Product ID' });
       }
 
-      // Query untuk mendapatkan detail produk dan status pembelian
       const [products] = await db.execute(
         `
         SELECT 
-          p.id AS product_id, 
-          p.name AS product_name, 
-          p.price, 
-          p.image, 
-          p.model_path,
-          p.preview_path,
-          p.createdAt, 
-          p.updatedAt, 
-          p.description, 
-          p.format, 
-          p.polygon_count, 
-          p.textures, 
-          p.rigged, 
-          p.specifications, 
-          COUNT(r.id) AS total_reviews, 
-          AVG(r.rating) AS average_rating, 
-          GROUP_CONCAT(r.comment SEPARATOR " | ") AS comments, 
-          GROUP_CONCAT(u.name SEPARATOR ", ") AS reviewers, 
-          COALESCE(SUM(dt.quantity), 0) AS units_sold,
+          p.*,
+          u.name as artist_name,
+          u.email as artist_email,
+          u.userName as artist_username,
+          COUNT(r.id) AS total_reviews,
+          AVG(r.rating) AS average_rating,
+          COUNT(dt.id) AS units_sold,
           EXISTS (
             SELECT 1 
             FROM transaksi t 
@@ -45,20 +31,13 @@ export default async function handler(req, res) {
             AND dt.product_id = p.id 
             AND t.status = 'completed'
           ) as has_purchased
-        FROM 
-          product p 
-        LEFT JOIN 
-          reviews r ON p.id = r.product_id 
-        LEFT JOIN 
-          users u ON r.user_id = u.id 
-        LEFT JOIN 
-          detail_transaksi dt ON p.id = dt.product_id 
-        LEFT JOIN 
-          transaksi t ON dt.transaksi_id = t.id AND t.status = "completed" 
-        WHERE 
-          p.id = ? 
-        GROUP BY 
-          p.id;
+        FROM product p
+        LEFT JOIN users u ON p.artist_id = u.id
+        LEFT JOIN reviews r ON p.id = r.product_id
+        LEFT JOIN detail_transaksi dt ON p.id = dt.product_id
+        LEFT JOIN transaksi t ON dt.transaksi_id = t.id AND t.status = 'completed'
+        WHERE p.id = ?
+        GROUP BY p.id;
         `,
         [userId || 0, id]
       );
@@ -69,28 +48,39 @@ export default async function handler(req, res) {
 
       const product = products[0];
 
-      // Transform paths to full URLs
-      if (product.image) {
-        product.image_url = `/img/${product.image}`;
-      }
-      if (product.model_path) {
-        product.model_url = `/models/${product.model_path}`;
-      }
-      if (product.preview_path) {
-        product.preview_url = `/preview/${product.preview_path}`;
-      }
+      // Format data untuk frontend
+      const formattedProduct = {
+        product_id: product.id,
+        product_name: product.name,
+        price: product.price,
+        image: product.image,
+        description: product.description,
+        format: product.format,
+        polygon_count: product.polygon_count,
+        textures: product.textures,
+        rigged: product.rigged,
+        specifications: product.specifications,
+        
+        // Artist info
+        artist_id: product.artist_id,
+        artist_name: product.artist_name,
+        artist_username: product.artist_username,
+        
+        // Stats
+        total_reviews: parseInt(product.total_reviews) || 0,
+        average_rating: parseFloat(product.average_rating) || 0,
+        units_sold: parseInt(product.units_sold) || 0,
+        has_purchased: !!product.has_purchased,
+        
+        // URLs
+        image_url: product.image ? `/img/${product.image}` : null,
+        model_url: product.model_path ? `/models/${product.model_path}` : null,
+        preview_url: product.preview_path ? `/preview/${product.preview_path}` : null,
+      };
 
-      if (product.format && typeof product.format === 'string') {
-        try {
-          product.format = JSON.parse(product.format);
-        } catch {
-          product.format = product.format.split(',').map((f) => f.trim());
-        }
-      }
-
-      res.status(200).json(product);
+      res.status(200).json(formattedProduct);
     } catch (error) {
-      console.error('Database error:', error.message);
+      console.error('Database error:', error);
       res.status(500).json({ error: 'Failed to retrieve product details' });
     }
   } else {

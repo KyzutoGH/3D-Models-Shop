@@ -1,8 +1,9 @@
+// pages/member/product/[id].js
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Image from 'next/image';
-import { getSession } from 'next-auth/react';
+import { getSession, signOut } from 'next-auth/react';
 import { Search, User, Menu, Eye, Plus, Minus, LogOut, Share2, Heart, Shield, 
          Package, FileCheck, ArrowLeft, ShoppingCart, Download } from 'lucide-react';
 
@@ -71,17 +72,7 @@ const ProductDetailPage = ({ session }) => {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch('/api/auth/logout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      });
-
-      if (response.ok) {
-        await signOut({
-          callbackUrl: '/login',
-          redirect: true
-        });
-      }
+      await signOut({ callbackUrl: '/login' });
     } catch (error) {
       console.error('Logout error:', error);
     }
@@ -92,14 +83,10 @@ const ProductDetailPage = ({ session }) => {
   };
 
   const handleQuantityChange = (increment) => {
-    setQuantity(prev => {
-      const newValue = prev + increment;
-      return newValue;
-    });
+    setQuantity(prev => Math.max(1, prev + increment));
   };
 
-  const handleCheckout = async () => {
-    // Your checkout logic here using Midtrans
+  const handleCheckout = () => {
     router.push(`/transaksi/${id}?quantity=${quantity}`);
   };
 
@@ -108,7 +95,6 @@ const ProductDetailPage = ({ session }) => {
       window.location.href = `/api/download/${id}`;
     } catch (error) {
       console.error('Download error:', error);
-      alert('Failed to download file. Please try again.');
     }
   };
 
@@ -137,7 +123,6 @@ const ProductDetailPage = ({ session }) => {
       <Head>
         <title>{product.product_name} | PunyaBapak</title>
         <meta name="description" content={product.description} />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
       <div className="min-h-screen bg-gray-50">
@@ -151,8 +136,7 @@ const ProductDetailPage = ({ session }) => {
                   <Image
                     src="/IconShopBlk.png"
                     alt="PunyaBapak Logo"
-                    layout="fill"
-                    objectFit="contain"
+                    fill
                     className="rounded-lg"
                   />
                 </div>
@@ -173,35 +157,25 @@ const ProductDetailPage = ({ session }) => {
 
               {/* User Navigation */}
               <div className="flex items-center space-x-4">
-                {user ? (
-                  <div className="hidden md:flex items-center space-x-4">
-                    <div className="text-right">
-                      <p className="text-sm text-gray-600">{greeting},</p>
-                      <p className="text-sm font-semibold text-gray-800">{user.fullName || user.name}</p>
-                    </div>
-                    <button
-                      onClick={navigateToProfile}
-                      className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
-                    >
-                      <User className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={handleLogout}
-                      className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
-                    >
-                      <LogOut className="w-4 h-4" />
-                    </button>
+                <div className="hidden md:flex items-center space-x-4">
+                  <div className="text-right">
+                    <p className="text-sm text-gray-600">{greeting},</p>
+                    <p className="text-sm font-semibold text-gray-800">{user.name}</p>
                   </div>
-                ) : (
                   <button
-                    onClick={() => router.push('/login')}
-                    className="hidden md:flex items-center space-x-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+                    onClick={navigateToProfile}
+                    className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
                   >
                     <User className="w-4 h-4" />
-                    <span>Masuk</span>
                   </button>
-                )}
-
+                  <button
+                    onClick={handleLogout}
+                    className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
+                  >
+                    <LogOut className="w-4 h-4" />
+                  </button>
+                </div>
+                
                 {/* Mobile Menu Button */}
                 <button
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -211,41 +185,6 @@ const ProductDetailPage = ({ session }) => {
                 </button>
               </div>
             </div>
-
-            {/* Mobile Menu */}
-            {isMenuOpen && (
-              <div className="md:hidden py-4 border-t">
-                {user ? (
-                  <div className="space-y-4">
-                    <div className="px-4">
-                      <p className="text-sm text-gray-600">{greeting},</p>
-                      <p className="text-sm font-semibold text-gray-800">{user.fullName || user.name}</p>
-                    </div>
-                    <div className="space-y-2">
-                      <button
-                        onClick={navigateToProfile}
-                        className="w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-100"
-                      >
-                        Profile
-                      </button>
-                      <button
-                        onClick={handleLogout}
-                        className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
-                      >
-                        Logout
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => router.push('/login')}
-                    className="w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-100"
-                  >
-                    Login
-                  </button>
-                )}
-              </div>
-            )}
           </div>
         </header>
 
@@ -288,7 +227,25 @@ const ProductDetailPage = ({ session }) => {
               {/* Product Info */}
               <div className="space-y-6">
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-800 mb-2">{product.product_name}</h1>
+                  <h1 className="text-2xl font-bold text-gray-800 mb-2">
+                    {product.product_name}
+                  </h1>
+
+                  {/* Artist Info */}
+                  {product.artist_name && (
+                    <div className="flex items-center space-x-3 mb-4">
+                      <div className="p-2 rounded-full bg-gray-100">
+                        <User className="w-4 h-4 text-gray-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">Artist</p>
+                        <span className="text-blue-600 font-medium">
+                          {product.artist_name}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="flex items-center space-x-4 text-sm text-gray-600">
                     <div className="flex items-center">
                       <span className="text-yellow-400">★</span>
@@ -296,18 +253,20 @@ const ProductDetailPage = ({ session }) => {
                         {new Intl.NumberFormat('en-US', { 
                           minimumFractionDigits: 1, 
                           maximumFractionDigits: 1 
-                        }).format(product.average_rating)}
+                        }).format(product.average_rating || 0)}
                       </span>
                     </div>
                     <span>|</span>
-                    <span>{product.total_reviews} Reviews</span>
+                    <span>{product.total_reviews || 0} Reviews</span>
                     <span>|</span>
-                    <span>{product.units_sold} Terjual</span>
+                    <span>{product.units_sold || 0} Terjual</span>
                   </div>
                 </div>
 
                 <div className="border-t border-b py-4">
-                  <p className="text-3xl font-bold text-blue-500">{formatPrice(product.price)}</p>
+                  <p className="text-3xl font-bold text-blue-500">
+                    {formatPrice(product.price)}
+                  </p>
                 </div>
 
                 <div className="space-y-4">
@@ -339,7 +298,8 @@ const ProductDetailPage = ({ session }) => {
                     <div className="flex items-center space-x-2">
                       <button
                         onClick={() => handleQuantityChange(-1)}
-                        className="p-1 rounded-full border hover:bg-gray-100"
+                        disabled={quantity <= 1}
+                        className="p-1 rounded-full border hover:bg-gray-100 disabled:opacity-50"
                       >
                         <Minus className="w-4 h-4" />
                       </button>
@@ -370,10 +330,12 @@ const ProductDetailPage = ({ session }) => {
                       >
                         <Eye className="w-5 h-5" />
                         <span>Preview</span>
-                      </button></>
+                      </button>
+                    </>
                   ) : (
                     <>
                       <button 
+                        onClick={() => router.push(`/preview/${id}`)}
                         className="flex-1 bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center space-x-2"
                       >
                         <Eye className="w-5 h-5" />
@@ -392,7 +354,7 @@ const ProductDetailPage = ({ session }) => {
               </div>
             </div>
 
-            {/* Product Details Tabs */}
+            {/* Product Details */}
             <div className="border-t">
               <div className="p-6">
                 <h2 className="text-xl font-bold text-gray-800 mb-4">Product Description</h2>
@@ -402,76 +364,75 @@ const ProductDetailPage = ({ session }) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {product.specifications && typeof product.specifications === 'object' ? (
                     Object.entries(product.specifications).map(([key, value]) => (
-                      <div key={key} className="flex border-b py-2">
-                        <span className="text-gray-600 w-1/2">{key}:</span>
-                        <span className="text-gray-800 w-1/2">{value}</span>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="col-span-2 text-gray-600">No specifications available</div>
-                  )}
-                </div>
+                      <div key={key} className="flex border-b py-2"><span className="text-gray-600 w-1/2">{key}:</span>
+                      <span className="text-gray-800 w-1/2">{value}</span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="col-span-2 text-gray-600">No specifications available</div>
+                )}
+              </div>
 
-                {/* Product Features */}
-                <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="flex items-center space-x-3 p-4 bg-blue-50 rounded-lg">
-                    <Shield className="w-8 h-8 text-blue-500" />
-                    <div>
-                      <h3 className="font-semibold text-gray-800">Guaranteed Quality</h3>
-                      <p className="text-sm text-gray-600">100% Quality Checked</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3 p-4 bg-green-50 rounded-lg">
-                    <Package className="w-8 h-8 text-green-500" />
-                    <div>
-                      <h3 className="font-semibold text-gray-800">Instant Delivery</h3>
-                      <p className="text-sm text-gray-600">Digital Download</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3 p-4 bg-purple-50 rounded-lg">
-                    <FileCheck className="w-8 h-8 text-purple-500" />
-                    <div>
-                      <h3 className="font-semibold text-gray-800">License Included</h3>
-                      <p className="text-sm text-gray-600">Commercial Use Ready</p>
-                    </div>
+              {/* Product Features */}
+              <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="flex items-center space-x-3 p-4 bg-blue-50 rounded-lg">
+                  <Shield className="w-8 h-8 text-blue-500" />
+                  <div>
+                    <h3 className="font-semibold text-gray-800">Guaranteed Quality</h3>
+                    <p className="text-sm text-gray-600">100% Quality Checked</p>
                   </div>
                 </div>
+                <div className="flex items-center space-x-3 p-4 bg-green-50 rounded-lg">
+                  <Package className="w-8 h-8 text-green-500" />
+                  <div>
+                    <h3 className="font-semibold text-gray-800">Instant Delivery</h3>
+                    <p className="text-sm text-gray-600">Digital Download</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3 p-4 bg-purple-50 rounded-lg">
+                  <FileCheck className="w-8 h-8 text-purple-500" />
+                  <div>
+                    <h3 className="font-semibold text-gray-800">License Included</h3>
+                    <p className="text-sm text-gray-600">Commercial Use Ready</p>
+                  </div>
+                </div>
+              </div>
 
-                {/* Reviews Section */}
-                <div className="mt-8">
-                  <h2 className="text-xl font-bold text-gray-800 mb-4">Customer Reviews</h2>
-                  <div className="flex items-center space-x-4 mb-6">
-                    <div className="text-4xl font-bold text-gray-800">
-                      {new Intl.NumberFormat('en-US', { 
-                        minimumFractionDigits: 1, 
-                        maximumFractionDigits: 1 
-                      }).format(product.average_rating)}
+              {/* Reviews Section */}
+              <div className="mt-8">
+                <h2 className="text-xl font-bold text-gray-800 mb-4">Customer Reviews</h2>
+                <div className="flex items-center space-x-4 mb-6">
+                  <div className="text-4xl font-bold text-gray-800">
+                    {new Intl.NumberFormat('en-US', { 
+                      minimumFractionDigits: 1, 
+                      maximumFractionDigits: 1 
+                    }).format(product.average_rating || 0)}
+                  </div>
+                  <div>
+                    <div className="flex text-yellow-400 mb-1">
+                      {'★'.repeat(Math.floor(product.average_rating || 0))}
+                      {'☆'.repeat(5 - Math.floor(product.average_rating || 0))}
                     </div>
-                    <div>
-                      <div className="flex text-yellow-400 mb-1">
-                        {'★'.repeat(Math.floor(product.average_rating))}
-                        {'☆'.repeat(5 - Math.floor(product.average_rating))}
-                      </div>
-                      <p className="text-sm text-gray-600">{product.total_reviews} total reviews</p>
-                    </div>
+                    <p className="text-sm text-gray-600">{product.total_reviews || 0} total reviews</p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </main>
+        </div>
+      </main>
 
-        {/* Footer */}
-        <footer className="bg-white border-t mt-12">
-          <div className="max-w-7xl mx-auto px-4 py-8">
-            <div className="text-center text-gray-600">
-              <p>© 2024 PunyaBapak. All rights reserved.</p>
-            </div>
+      {/* Footer */}
+      <footer className="bg-white border-t mt-12">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="text-center text-gray-600">
+            <p>© 2024 PunyaBapak. All rights reserved.</p>
           </div>
-        </footer>
-      </div>
-    </>
-  );
+        </div>
+      </footer>
+    </div>
+  </>
+);
 };
 
 export default ProductDetailPage;
