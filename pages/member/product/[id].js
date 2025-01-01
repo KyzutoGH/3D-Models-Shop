@@ -325,7 +325,7 @@ const ProductDetailPage = ({ session }) => {
                         <span>Download File</span>
                       </button>
                       <button 
-                        onClick={() => router.push(`/preview/${id}`)}
+                        onClick={() => router.push(`/member/preview/${id}`)}
                         className="flex-1 bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center space-x-2"
                       >
                         <Eye className="w-5 h-5" />
@@ -335,7 +335,7 @@ const ProductDetailPage = ({ session }) => {
                   ) : (
                     <>
                       <button 
-                        onClick={() => router.push(`/preview/${id}`)}
+                        onClick={() => router.push(`/member/preview/${id}`)}
                         className="flex-1 bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center space-x-2"
                       >
                         <Eye className="w-5 h-5" />

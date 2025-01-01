@@ -7,7 +7,7 @@ import { getSession, signOut } from 'next-auth/react';
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
-  
+
   if (!session) {
     return {
       redirect: {
@@ -21,15 +21,15 @@ export async function getServerSideProps(context) {
     const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
     const host = context.req.headers.host;
     const apiUrl = `${protocol}://${host}/api/products`;
-    
+
     const response = await fetch(apiUrl);
-    
+
     if (!response.ok) {
       throw new Error(`Failed to fetch products: ${response.status} ${response.statusText}`);
     }
 
     const products = await response.json();
-    
+
     if (!Array.isArray(products)) {
       throw new Error('Invalid products data structure');
     }
@@ -43,7 +43,7 @@ export async function getServerSideProps(context) {
   } catch (error) {
     console.error('Error fetching products:', error);
     return {
-      props: { 
+      props: {
         session,
         products: [],
         error: {
@@ -81,7 +81,7 @@ const HomePageMember = ({ session, products }) => {
     if (searchTerm.trim() === '') {
       setFilteredProducts(products);
     } else {
-      const filtered = products.filter(product => 
+      const filtered = products.filter(product =>
         product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (product.artist_name && product.artist_name.toLowerCase().includes(searchTerm.toLowerCase()))
       );
@@ -165,9 +165,7 @@ const HomePageMember = ({ session, products }) => {
                 <div className="hidden md:flex items-center space-x-4">
                   <div className="text-right">
                     <p className="text-sm text-gray-600">{greeting},</p>
-                    <p className="text-sm font-semibold text-gray-800">
-                      {user.name}
-                    </p>
+                    <p className="text-sm font-semibold text-gray-800">{user.name}</p>
                   </div>
                   <button
                     onClick={navigateToProfile}
@@ -182,7 +180,7 @@ const HomePageMember = ({ session, products }) => {
                     <LogOut className="w-4 h-4" />
                   </button>
                 </div>
-                
+
                 {/* Mobile Menu Button */}
                 <button
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -199,20 +197,18 @@ const HomePageMember = ({ session, products }) => {
                 <div className="space-y-4">
                   <div className="px-4">
                     <p className="text-sm text-gray-600">{greeting},</p>
-                    <p className="text-sm font-semibold text-gray-800">
-                      {user.name}
-                    </p>
+                    <p className="text-sm font-semibold text-gray-800">{user.name}</p>
                   </div>
                   <div className="space-y-2">
                     <button
                       onClick={navigateToProfile}
-                      className="w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-100"
+                      className="w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
                     >
                       Profile
                     </button>
                     <button
                       onClick={handleLogout}
-                      className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
+                      className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100 rounded-lg"
                     >
                       Logout
                     </button>
@@ -251,14 +247,14 @@ const HomePageMember = ({ session, products }) => {
           {/* Products Grid */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {filteredProducts.map((product) => (
-              <div 
-                key={product.id} 
+              <div
+                key={product.id}
                 className="bg-white rounded-lg shadow-lg overflow-hidden transition-transform hover:scale-105 cursor-pointer"
                 onClick={() => router.push(`/member/product/${product.id}`)}
               >
                 <div className="relative h-48">
                   <Image
-                    src={`/img/${product.image}` || '/api/placeholder/200/200'}
+                    src={product.image.startsWith('/') ? product.image : `/${product.image}`}
                     alt={product.name}
                     fill
                     className="object-cover"
@@ -268,7 +264,7 @@ const HomePageMember = ({ session, products }) => {
                   <h3 className="text-lg font-semibold text-gray-800 mb-2">
                     {product.name}
                   </h3>
-                  
+
                   {/* Artist Info */}
                   {product.artist_name && (
                     <div className="flex items-center space-x-2 mb-2">
@@ -278,14 +274,14 @@ const HomePageMember = ({ session, products }) => {
                       </span>
                     </div>
                   )}
-                  
+
                   {/* Rating & Stats */}
                   <div className="flex items-center space-x-2 mb-2">
                     <div className="flex items-center">
                       <Star className="w-4 h-4 text-yellow-400 fill-current" />
                       <span className="ml-1 text-sm text-gray-600">
-                        {product.average_rating ? 
-                          Number(product.average_rating).toFixed(1) : 
+                        {product.average_rating ?
+                          Number(product.average_rating).toFixed(1) :
                           '0.0'
                         }
                       </span>
@@ -295,12 +291,12 @@ const HomePageMember = ({ session, products }) => {
                       {product.units_sold || 0} Terjual
                     </span>
                   </div>
-                  
+
                   <p className="text-blue-500 font-bold mb-4">
                     {formatPrice(product.price)}
                   </p>
-                  
-                  <button 
+
+                  <button
                     onClick={(e) => {
                       e.stopPropagation();
                       router.push(`/member/product/${product.id}`);
