@@ -118,12 +118,12 @@ const LoginPage = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-900 p-4">
-      <div className="bg-slate-800 p-6 rounded-lg shadow-md w-full max-w-sm">
+      <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-sm">
         <div className="flex items-center justify-center mb-4">
           <div className="w-8 h-8">
             <Image src="/IconShopBlk.png" width={580} height={430} alt="Logo" />
           </div>
-          <h1 className="text-xl text-yellow-700 ml-2 font-semibold">PunyaBapak</h1>
+          <h1 className="text-xl text-gray-700 ml-2 font-semibold">PunyaBapak</h1>
         </div>
 
         {error && (
@@ -134,7 +134,7 @@ const LoginPage = () => {
 
         <form onSubmit={handleLogin} className="space-y-3">
           <div>
-            <label className="text-xs font-medium text-yellow-700">Email atau Username</label>
+            <label className="text-xs font-medium text-gray-700">Email atau Username</label>
             <input
               type="text"
               id="emailOrUsername"
@@ -148,7 +148,7 @@ const LoginPage = () => {
           </div>
 
           <div>
-            <label className="text-xs font-medium text-yellow-700">Password</label>
+            <label className="text-xs font-medium text-gray-700">Password</label>
             <input
               type="password"
               id="password"
@@ -164,7 +164,7 @@ const LoginPage = () => {
 <div className="flex flex-col gap-3 pt-2">
             <button
               type="submit"
-              className="w-full bg-yellow-500 text-slate-900 py-2.5 rounded-md hover:bg-yellow-400 transition-colors text-sm font-semibold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-blue-600 text-gray-300 py-2.5 rounded-md hover:bg-blue-700 transition-colors text-sm font-semibold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={loading}
             >
               {loading ? (
@@ -183,7 +183,7 @@ const LoginPage = () => {
             <Link href="/register" className="block">
               <button
                 type="button"
-                className="w-full bg-transparent border-2 border-yellow-500 text-yellow-500 py-2 rounded-md hover:bg-yellow-500 hover:text-slate-900 transition-all text-sm font-semibold disabled:opacity-50"
+                className="w-full bg-blue-600 border-2 border-blue-600 text-gray-300 py-2 rounded-md hover:bg-blue-700 hover:text-slate-300 transition-all text-sm font-semibold disabled:opacity-50"
                 disabled={loading}
               >
                 Register
@@ -194,16 +194,16 @@ const LoginPage = () => {
 
         <div className="relative my-4">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-orange-300"></div>
+            <div className="w-full border-t border-slate-800"></div>
           </div>
           <div className="relative flex justify-center text-xs">
-            <span className="px-2 bg-orange-300 text-black">Atau</span>
+            <span className="px-2 bg-slate-800 text-white">Atau</span>
           </div>
         </div>
 
         <button
           onClick={handleGoogleLogin}
-          className="w-full flex items-center justify-center gap-2 bg-white text-sm border border-gray-300 text-gray-700 py-2 rounded hover:bg-gray-50 transition-colors disabled:opacity-50"
+          className="w-full flex items-center justify-center gap-2 bg-white text-sm border border-gray-300 text-gray-700 py-2 rounded hover:bg-gray-300 transition-colors disabled:opacity-50"
           disabled={loading}
         >
           <Image src="/google.png" width={16} height={16} alt="Google Icon" />

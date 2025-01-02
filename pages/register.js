@@ -84,36 +84,36 @@ const RegisterPage = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-900 p-4">
-      <div className="bg-slate-800 p-6 rounded-lg shadow-md w-full max-w-md">
+      <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
         <div className="flex items-center justify-center mb-4">
           <div className="w-8 h-8">
             <Image src="/IconShopBlk.png" width={580} height={430} alt="Logo" />
           </div>
-          <h1 className="text-xl text-yellow-700 ml-2 font-semibold">PunyaBapak</h1>
+          <h1 className="text-xl text-gray-700 ml-2 font-semibold">PunyaBapak</h1>
         </div>
 
         <form onSubmit={handleRegister} className="grid grid-cols-2 gap-3">
           <div className="col-span-2 md:col-span-1">
-            <label className="text-xs font-medium text-yellow-700">Nama</label>
+            <label className="text-xs font-medium text-gray-700">Nama</label>
             <input
               type="text"
               id="name"
               value={formData.name}
               onChange={handleChange}
-              className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded"
+              className="w-full px-2 py-1.5 text-sm border border-gray-400 rounded"
               placeholder="Nama"
               required
             />
           </div>
 
           <div className="col-span-2 md:col-span-1">
-            <label className="text-xs font-medium text-yellow-700">Username</label>
+            <label className="text-xs font-medium text-gray-700">Username</label>
             <input
               type="text"
               id="userName"
               value={formData.userName}
               onChange={handleChange}
-              className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded"
+              className="w-full px-2 py-1.5 text-sm border border-gray-400 rounded"
               placeholder="Username"
               required
             />
@@ -121,13 +121,13 @@ const RegisterPage = () => {
           </div>
 
           <div className="col-span-2">
-            <label className="text-xs font-medium text-yellow-700">Email</label>
+            <label className="text-xs font-medium text-gray-700">Email</label>
             <input
               type="email"
               id="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded"
+              className="w-full px-2 py-1.5 text-sm border border-gray-400 rounded"
               placeholder="Email"
               required
               disabled={showGoogleButton}
@@ -135,13 +135,13 @@ const RegisterPage = () => {
           </div>
 
           <div className="col-span-2 md:col-span-1">
-            <label className="text-xs font-medium text-yellow-700">Password</label>
+            <label className="text-xs font-medium text-gray-700">Password</label>
             <input
               type="password"
               id="password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded"
+              className="w-full px-2 py-1.5 text-sm border border-gray-400 rounded"
               placeholder="Password"
               required
               minLength={6}
@@ -149,13 +149,13 @@ const RegisterPage = () => {
           </div>
 
           <div className="col-span-2 md:col-span-1">
-            <label className="text-xs font-medium text-yellow-700">Konfirmasi</label>
+            <label className="text-xs font-medium text-gray-700">Konfirmasi</label>
             <input
               type="password"
               id="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
-              className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded"
+              className="w-full px-2 py-1.5 text-sm border border-gray-400 rounded"
               placeholder="Konfirmasi Password"
               required
               minLength={6}
@@ -163,13 +163,13 @@ const RegisterPage = () => {
           </div>
 
           <div className="col-span-2">
-            <label className="text-xs font-medium text-yellow-700">Nomor Telepon</label>
+            <label className="text-xs font-medium text-gray-700">Nomor Telepon</label>
             <input
               type="text"
               id="nomorTelepon"
               value={formData.nomorTelepon}
               onChange={handleChange}
-              className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded"
+              className="w-full px-2 py-1.5 text-sm border border-gray-400 rounded"
               placeholder="Nomor Telepon"
               required
             />
@@ -184,9 +184,9 @@ const RegisterPage = () => {
             </button>
           </div>
 
-          <div className="col-span-2 text-center text-xs text-yellow-600">
+          <div className="col-span-2 text-center text-xs text-gray-700">
             Sudah punya akun?
-            <Link href="/login" className="ml-1 text-blue-600 hover:underline">
+            <Link href="/login" className="ml-1 text-blue-700 hover:underline">
               Login
             </Link>
           </div>
