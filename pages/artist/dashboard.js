@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/router';
-import { Upload, X, Package, DollarSign, TrendingUp, ShoppingBag, Search, Filter, Plus } from 'lucide-react';
+import { Upload, X, Package, DollarSign, TrendingUp, ShoppingBag, Search, Filter, Plus, LogOut } from 'lucide-react';
 
 export default function ArtistDashboard() {
   const { data: session, status } = useSession({
@@ -16,6 +16,7 @@ export default function ArtistDashboard() {
   const [editingProduct, setEditingProduct] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [greeting, setGreeting] = useState('');
   const [files, setFiles] = useState({
     image: null,
     model: null,
@@ -31,6 +32,17 @@ export default function ArtistDashboard() {
     rigged: '',
     specifications: ''
   });
+
+  useEffect(() => {
+    const getGreeting = () => {
+      const hour = new Date().getHours();
+      if (hour >= 3 && hour < 11) return 'Selamat Pagi';
+      if (hour >= 11 && hour < 15) return 'Selamat Siang';
+      if (hour >= 15 && hour < 18) return 'Selamat Sore';
+      return 'Selamat Malam';
+    };
+    setGreeting(getGreeting());
+  }, []);
 
   const stats = [
     {
@@ -182,6 +194,7 @@ export default function ArtistDashboard() {
     product.description?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+
   return (
     <div className="min-h-screen bg-gray-800 text-white">
       {/* Top Navigation */}
@@ -191,15 +204,25 @@ export default function ArtistDashboard() {
             <div className="flex items-center space-x-4">
               <span className="text-xl font-bold">Artist Dashboard</span>
             </div>
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-6">
+              <div className="flex items-center space-x-3">
                 <img 
-                  src={session?.user?.image || '/placeholder-avatar.png'}
+                  src="/placeholder.png"
                   alt="Profile"
                   className="w-8 h-8 rounded-full"
                 />
-                <span className="text-sm font-medium">{session?.user?.name}</span>
+                <div className="flex flex-col">
+                  <span className="text-sm text-gray-400">{greeting},</span>
+                  <span className="text-sm font-medium">{session?.user?.name}</span>
+                </div>
               </div>
+              <button
+                onClick={() => signOut({ callbackUrl: '/login' })}
+                className="flex items-center space-x-2 px-3 py-2 bg-red-500 bg-opacity-20 hover:bg-opacity-30 rounded-lg transition-all"
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="text-sm">Logout</span>
+              </button>
             </div>
           </div>
         </div>
@@ -314,10 +337,10 @@ export default function ArtistDashboard() {
         </div>
       </div>
 
-      {/* Form Modal */}
+      {/* Optimized Form Modal */}
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50 overflow-y-auto">
-          <div className="bg-gray-900 rounded-lg max-w-3xl w-full p-6">
+          <div className="bg-gray-900 rounded-lg w-full max-w-2xl p-6">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold">
                 {editingProduct ? 'Edit Model' : 'Tambah Model Baru'}
@@ -334,9 +357,9 @@ export default function ArtistDashboard() {
             </div>
             
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block mb-1">Nama Model*</label>
+                  <label className="block text-sm mb-1">Nama Model*</label>
                   <input 
                     type="text"
                     value={formData.name}
@@ -346,7 +369,7 @@ export default function ArtistDashboard() {
                   />
                 </div>
                 <div>
-                  <label className="block mb-1">Harga (Rp)*</label>
+                  <label className="block text-sm mb-1">Harga (Rp)*</label>
                   <input
                     type="number"
                     value={formData.price}
@@ -357,14 +380,14 @@ export default function ArtistDashboard() {
                 </div>
               </div>
 
-              {/* File Upload Section */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="col-span-1">
-                  <label className="block mb-1">Preview Image*</label>
-                  <div className="border-2 border-dashed border-gray-700 rounded-lg p-4 text-center">
+              {/* Simplified File Upload Section */}
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm mb-1">Preview Image*</label>
+                  <div className="border-2 border-dashed border-gray-700 rounded-lg p-2 text-center">
                     {previewImage ? (
                       <div className="relative">
-                        <img src={previewImage} alt="Preview" className="max-h-32 mx-auto" />
+                        <img src={previewImage} alt="Preview" className="max-h-24 mx-auto" />
                         <button
                           type="button"
                           onClick={() => {
@@ -377,9 +400,9 @@ export default function ArtistDashboard() {
                         </button>
                       </div>
                     ) : (
-                      <div className="space-y-2">
-                        <Upload className="mx-auto h-8 w-8 text-gray-400" />
-                        <label className="cursor-pointer text-blue-400 hover:text-blue-300">
+                      <div className="space-y-1">
+                        <Upload className="mx-auto h-6 w-6 text-gray-400" />
+                        <label className="cursor-pointer text-sm text-blue-400 hover:text-blue-300">
                           Upload Image
                           <input
                             type="file"
@@ -393,44 +416,43 @@ export default function ArtistDashboard() {
                   </div>
                 </div>
                 
-                <div className="col-span-2 space-y-4">
+                <div className="col-span-2 space-y-2">
                   <div>
-                    <label className="block mb-1">3D Model File*</label>
+                    <label className="block text-sm mb-1">3D Model File*</label>
                     <input
                       type="file"
                       accept=".glb,.gltf,.fbx,.obj"
                       onChange={(e) => handleFileChange(e, 'model')}
-                      className="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white"
+                      className="w-full text-sm bg-gray-800 border border-gray-700 rounded-lg p-2 text-white"
                     />
                   </div>
                   
                   <div>
-                    <label className="block mb-1">Preview Model (optional)</label>
+                    <label className="block text-sm mb-1">Preview Model</label>
                     <input
                       type="file"
                       accept=".glb,.gltf"
                       onChange={(e) => handleFileChange(e, 'preview')}
-                      className="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white"
+                      className="w-full text-sm bg-gray-800 border border-gray-700 rounded-lg p-2 text-white"
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Other form fields */}
+              {/* Compact Form Fields */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block mb-1">Format File*</label>
+                  <label className="block text-sm mb-1">Format File*</label>
                   <input
                     type="text"
                     value={formData.format}
                     onChange={(e) => setFormData({...formData, format: e.target.value})}
                     className="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="FBX, OBJ, GLB"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block mb-1">Polygon Count*</label>
+                  <label className="block text-sm mb-1">Polygon Count*</label>
                   <input
                     type="text"
                     value={formData.polygon_count}
@@ -439,11 +461,8 @@ export default function ArtistDashboard() {
                     required
                   />
                 </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block mb-1">Textures*</label>
+                  <label className="block text-sm mb-1">Textures*</label>
                   <input
                     type="text"
                     value={formData.textures}
@@ -453,7 +472,7 @@ export default function ArtistDashboard() {
                   />
                 </div>
                 <div>
-                  <label className="block mb-1">Rigged*</label>
+                  <label className="block text-sm mb-1">Rigged*</label>
                   <input
                     type="text"
                     value={formData.rigged}
@@ -465,41 +484,40 @@ export default function ArtistDashboard() {
               </div>
 
               <div>
-                <label className="block mb-1">Deskripsi*</label>
+                <label className="block text-sm mb-1">Deskripsi*</label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
                   className="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  rows="4"
+                  rows="3"
                   required
                 />
               </div>
 
               <div>
-                <label className="block mb-1">Spesifikasi Tambahan</label>
+                <label className="block text-sm mb-1">Spesifikasi Tambahan</label>
                 <textarea
                   value={formData.specifications}
                   onChange={(e) => setFormData({...formData, specifications: e.target.value})}
                   className="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  rows="3"
-                  placeholder="Tambahan informasi teknis atau persyaratan khusus"
+                  rows="2"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 mt-6">
+              <div className="flex justify-end gap-2 mt-4">
                 <button
                   type="button"
                   onClick={() => {
                     setShowForm(false);
                     resetForm();
                   }}
-                  className="px-4 py-2 border border-gray-700 rounded-lg hover:bg-gray-800 transition-colors"
+                  className="px-4 py-2 text-sm border border-gray-700 rounded-lg hover:bg-gray-800 transition-colors"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                  className="px-4 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
                 >
                   {editingProduct ? 'Update' : 'Simpan'}
                 </button>

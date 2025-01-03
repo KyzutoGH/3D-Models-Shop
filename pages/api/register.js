@@ -1,21 +1,27 @@
-import db from "../../lib/db"; // Koneksi database
+// api/register.js
+import db from "../../lib/db";
 import bcrypt from "bcryptjs";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    // Jika bukan method POST
     return res.status(405).json({ message: "Method not allowed" });
   }
 
-  const { email, name, userName, password, nomorTelepon } = req.body;
+  const { email, name, userName, password, nomorTelepon, role } = req.body;
 
   // Validasi input
-  if (!email || !name || !userName || !nomorTelepon) {
+  if (!email || !name || !userName || !nomorTelepon || !role) {
     return res.status(400).json({ message: "Semua field harus diisi" });
   }
 
+  // Validasi role
+  const allowedRoles = ['member', 'artist'];
+  if (!allowedRoles.includes(role)) {
+    return res.status(400).json({ message: "Role tidak valid" });
+  }
+
   // Validasi username
-  const userNameRegex = /^[a-z0-9_-]+$/; // Hanya boleh huruf kecil, angka, '-' dan '_'
+  const userNameRegex = /^[a-z0-9_-]+$/;
   if (!userNameRegex.test(userName)) {
     return res.status(400).json({
       message: "Username hanya boleh mengandung huruf kecil, angka, dan simbol '-' atau '_'. Tidak boleh mengandung spasi atau huruf kapital."
@@ -37,7 +43,6 @@ export default async function handler(req, res) {
       hashedPassword = await bcrypt.hash(password, 10);
     }
 
-    // Ambil tanggal dan waktu sekarang
     const tgl_register = new Date().toISOString().slice(0, 19).replace("T", " ");
 
     // Insert data ke database
@@ -45,7 +50,7 @@ export default async function handler(req, res) {
       INSERT INTO users (email, name, userName, role, password, nomorTelepon, tgl_register) 
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
-    const values = [email, name, userName, "member", hashedPassword, nomorTelepon, tgl_register];
+    const values = [email, name, userName, role, hashedPassword, nomorTelepon, tgl_register];
 
     const [result] = await db.query(insertQuery, values);
 

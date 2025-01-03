@@ -12,6 +12,7 @@ const RegisterPage = () => {
     password: "",
     confirmPassword: "",
     nomorTelepon: "",
+    role: "member" // Default role
   });
   const [userNameError, setUserNameError] = useState("");
   const [showGoogleButton, setShowGoogleButton] = useState(false);
@@ -173,6 +174,37 @@ const RegisterPage = () => {
               placeholder="Nomor Telepon"
               required
             />
+          </div>
+
+          {/* Role Selection */}
+          <div className="col-span-2">
+            <label className="text-xs font-medium text-gray-700 block mb-2">Daftar Sebagai</label>
+            <div className="flex gap-4">
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  id="role"
+                  name="role"
+                  value="member"
+                  checked={formData.role === "member"}
+                  onChange={handleChange}
+                  className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                />
+                <span className="ml-2 text-sm text-gray-700">Member</span>
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  id="role"
+                  name="role"
+                  value="artist"
+                  checked={formData.role === "artist"}
+                  onChange={handleChange}
+                  className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                />
+                <span className="ml-2 text-sm text-gray-700">Artist</span>
+              </label>
+            </div>
           </div>
 
           <div className="col-span-2 mt-2">

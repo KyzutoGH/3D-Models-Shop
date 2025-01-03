@@ -4,6 +4,12 @@ const nextConfig = {
     swcMinify: true,
 }
 module.exports = {
+    webpack: (config) => {
+        config.externals = [...(config.externals || []), { canvas: 'canvas' }];
+        return config;
+    },
+}
+module.exports = {
     experimental: {
         middleware: true,
     },

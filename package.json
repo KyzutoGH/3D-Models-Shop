@@ -49,6 +49,7 @@
   "devDependencies": {
     "@types/node": "^22.10.2",
     "@types/react": "^19.0.2",
+    "@types/three": "^0.171.0",
     "eslint": "9.15.0",
     "eslint-config-next": "15.0.3",
     "prisma": "^6.1.0"

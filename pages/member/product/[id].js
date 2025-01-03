@@ -92,7 +92,7 @@ const ProductDetailPage = ({ session }) => {
 
   const handleDownload = async () => {
     try {
-      window.location.href = `/api/download/${id}`;
+      window.location.href = `/api/products/download/${id}`;
     } catch (error) {
       console.error('Download error:', error);
     }
@@ -207,7 +207,7 @@ const ProductDetailPage = ({ session }) => {
               <div className="space-y-4">
                 <div className="relative aspect-square rounded-lg overflow-hidden">
                   <Image
-                    src={`/img/${product.image}`}
+                    src={`${product.image}`}
                     alt={product.product_name}
                     layout="fill"
                     objectFit="cover"
@@ -324,23 +324,9 @@ const ProductDetailPage = ({ session }) => {
                         <Download className="w-5 h-5" />
                         <span>Download File</span>
                       </button>
-                      <button 
-                        onClick={() => router.push(`/member/preview/${id}`)}
-                        className="flex-1 bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center space-x-2"
-                      >
-                        <Eye className="w-5 h-5" />
-                        <span>Preview</span>
-                      </button>
                     </>
                   ) : (
                     <>
-                      <button 
-                        onClick={() => router.push(`/member/preview/${id}`)}
-                        className="flex-1 bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center space-x-2"
-                      >
-                        <Eye className="w-5 h-5" />
-                        <span>Preview</span>
-                      </button>
                       <button 
                         onClick={handleCheckout}
                         className="flex-1 bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center space-x-2"

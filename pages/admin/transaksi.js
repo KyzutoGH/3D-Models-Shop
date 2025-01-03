@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/ca
 
 const SalesAnalyticsPage = () => {
   const [salesData, setSalesData] = useState([]);
+  const [revenueData, setRevenueData] = useState([]);
   const [selectedPeriod, setSelectedPeriod] = useState('all');
   const [loading, setLoading] = useState(false);
   const [totalRevenue, setTotalRevenue] = useState(0);
@@ -14,12 +15,14 @@ const SalesAnalyticsPage = () => {
     const fetchSalesData = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`/api/sales?period=${selectedPeriod}`);
+        const response = await fetch(`/api/admin/penjualan?period=${selectedPeriod}`);
         if (response.ok) {
           const data = await response.json();
-          setSalesData(data.sales);
-          setTotalRevenue(data.totalRevenue);
-          setTopArtists(data.topArtists);
+          console.log('Received data:', data); // Debug log
+          setSalesData(data.sales || []);
+          setRevenueData(data.revenue || []);
+          setTotalRevenue(data.totalRevenue || 0);
+          setTopArtists(data.topArtists || []);
         }
       } catch (error) {
         console.error('Error fetching sales data:', error);
@@ -64,11 +67,25 @@ const SalesAnalyticsPage = () => {
               <CardContent>
                 <div className="h-64">
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={salesData}>
+                    <LineChart data={revenueData}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" />
-                      <YAxis />
-                      <Tooltip />
+                      <XAxis 
+                        dataKey="date" 
+                        tickFormatter={(date) => new Date(date).toLocaleDateString()}
+                      />
+                      <YAxis 
+                        tickFormatter={(value) => new Intl.NumberFormat('id-ID', {
+                          notation: 'compact',
+                          compactDisplay: 'short',
+                          maximumFractionDigits: 1
+                        }).format(value)}
+                      />
+                      <Tooltip 
+                        formatter={(value) => new Intl.NumberFormat('id-ID', {
+                          style: 'currency',
+                          currency: 'IDR'
+                        }).format(value)}
+                      />
                       <Legend />
                       <Line 
                         type="monotone" 
@@ -95,12 +112,17 @@ const SalesAnalyticsPage = () => {
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="artistName" />
                       <YAxis />
-                      <Tooltip />
+                      <Tooltip 
+                        formatter={(value) => [
+                          value,
+                          'Total Orders'
+                        ]}
+                      />
                       <Legend />
                       <Bar 
                         dataKey="sales" 
                         fill="#82ca9d" 
-                        name="Total Sales"
+                        name="Total Orders"
                       />
                     </BarChart>
                   </ResponsiveContainer>
@@ -132,7 +154,9 @@ const SalesAnalyticsPage = () => {
                       {salesData.map((sale) => (
                         <tr key={sale.orderId} className="text-gray-700">
                           <td className="py-2 px-4 border">{sale.orderId}</td>
-                          <td className="py-2 px-4 border">{new Date(sale.date).toLocaleDateString()}</td>
+                          <td className="py-2 px-4 border">
+                            {new Date(sale.date).toLocaleDateString('id-ID')}
+                          </td>
                           <td className="py-2 px-4 border">{sale.artistName}</td>
                           <td className="py-2 px-4 border">{sale.productName}</td>
                           <td className="py-2 px-4 border text-center">{sale.quantity}</td>
@@ -146,7 +170,7 @@ const SalesAnalyticsPage = () => {
                             {new Intl.NumberFormat('id-ID', { 
                               style: 'currency', 
                               currency: 'IDR' 
-                            }).format(sale.price * sale.quantity)}
+                            }).format(sale.total)}
                           </td>
                           <td className="py-2 px-4 border">
                             <span className={`px-2 py-1 rounded-full text-xs ${

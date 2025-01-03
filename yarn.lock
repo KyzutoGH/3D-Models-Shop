@@ -1204,7 +1204,7 @@
   resolved "https://registry.npmjs.org/@types/stats.js/-/stats.js-0.17.3.tgz"
   integrity sha512-pXNfAD3KHOdif9EQXZ9deK82HVNaXP5ZIF5RP2QG6OQFNTaY2YIetfrE9t528vEreGQvEPRDDc8muaoYeK0SxQ==
 
-"@types/three@*", "@types/three@>=0.134.0":
+"@types/three@*", "@types/three@^0.171.0", "@types/three@>=0.134.0":
   version "0.171.0"
   resolved "https://registry.npmjs.org/@types/three/-/three-0.171.0.tgz"
   integrity sha512-oLuT1SAsT+CUg/wxUTFHo0K3NtJLnx9sJhZWQJp/0uXqFpzSk1hRHmvWvpaAWSfvx2db0lVKZ5/wV0I0isD2mQ==
