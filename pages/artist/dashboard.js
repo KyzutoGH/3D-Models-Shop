@@ -32,6 +32,12 @@ export default function ArtistDashboard() {
     rigged: '',
     specifications: ''
   });
+  const [getStats, setStats] = useState({
+    totalProducts: 0,
+    totalRevenue: 0,
+    productsSold: 0,
+    bestSeller: '-'
+  });
 
   useEffect(() => {
     const getGreeting = () => {
@@ -44,28 +50,45 @@ export default function ArtistDashboard() {
     setGreeting(getGreeting());
   }, []);
 
+  const fetchStats = async () => {
+    try {
+      const res = await fetch('/api/artist/stats');
+      if (res.ok) {
+        const data = await res.json();
+        setStats({
+          totalProducts: data.totalProducts,
+          totalRevenue: data.totalRevenue,
+          productsSold: data.productsSold,
+          bestSeller: data.bestSeller
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    }
+  };
+
   const stats = [
     {
       label: 'Total Produk',
-      value: products.length,
+      value: getStats.totalProducts,
       icon: <Package className="w-6 h-6 text-blue-500" />,
       bgColor: 'bg-blue-50'
     },
     {
       label: 'Total Pendapatan',
-      value: 'Rp 0',
+      value: `Rp ${getStats.totalRevenue.toLocaleString()}`,
       icon: <DollarSign className="w-6 h-6 text-green-500" />,
       bgColor: 'bg-green-50'
     },
     {
       label: 'Produk Terjual',
-      value: '0',
+      value: getStats.productsSold,
       icon: <ShoppingBag className="w-6 h-6 text-purple-500" />,
       bgColor: 'bg-purple-50'
     },
     {
       label: 'Produk Terlaris',
-      value: '-',
+      value: getStats.bestSeller,
       icon: <TrendingUp className="w-6 h-6 text-orange-500" />,
       bgColor: 'bg-orange-50'
     }
@@ -74,6 +97,7 @@ export default function ArtistDashboard() {
   useEffect(() => {
     if (status === 'authenticated' && session?.user?.role === 'artist') {
       fetchProducts();
+      fetchStats();
     }
   }, [session, status]);
 
