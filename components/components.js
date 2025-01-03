@@ -30,6 +30,9 @@ const Navbar = ({ children }) => {
           </div>
         </Link>
         <div className="flex items-center text-lg">
+          <Link href="/" className="mx-2 hover:text-gray-300">
+            Home
+          </Link>
           <button 
           className="p-1 box-content h-auto w-auto mx-2 border-1 rounded-lg bg-orange-300 text-black hover:bg-orange-400 active:bg-orange-500 focus:outline-none focus:ring focus:ring-orange-300">
             <Link href="login">Login</Link>
