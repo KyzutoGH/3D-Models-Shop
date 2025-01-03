@@ -1,7 +1,7 @@
 import React from 'react';
 import { useRouter } from 'next/router';
 import { useSession, signOut } from 'next-auth/react';
-import { LayoutDashboard, Users, ShoppingBag, BarChart3, LogOut } from 'lucide-react';
+import { LayoutDashboard, Users, ShoppingBag, BarChart3, LogOut, Download } from 'lucide-react';
 
 const AdminLayout = ({ children }) => {
   const router = useRouter();
@@ -40,6 +40,12 @@ const AdminLayout = ({ children }) => {
       href: '/admin/produk',
       icon: ShoppingBag,
       current: router.pathname === '/admin/produk'
+    },
+    {
+      name: 'Download',
+      href: '/admin/download',
+      icon: Download ,
+      current: router.pathname === '/admin/download'
     },
     {
       name: 'Transaksi',
